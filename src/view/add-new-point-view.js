@@ -1,4 +1,4 @@
-import { createElement } from "../render.js";
+import { createElement } from '../render.js';
 
 function createNewPointTemplate() {
   return `<li class="trip-events__item">
@@ -167,7 +167,7 @@ function createNewPointTemplate() {
 
 export default class NewPointView {
   getTemplate() {
-    return createEditPointTemplate();
+    return createNewPointTemplate();
   }
 
   getElement() {

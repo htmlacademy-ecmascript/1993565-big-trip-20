@@ -1,4 +1,4 @@
-import { createElement } from "../render.js";
+import { createElement } from '../render.js';
 
 function createLoadTemplate() {
   return `<div class="page-body__container">
