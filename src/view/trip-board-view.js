@@ -1,7 +1,7 @@
-import { createElement } from "../render.js";
+import { createElement } from '../render.js';
 
 function createTripBoardTemplate() {
-  return `<section class="trip-events">  </section>`;
+  return '<section class="trip-events">  </section>';
 }
 
 export default class EventTripBoardView {
