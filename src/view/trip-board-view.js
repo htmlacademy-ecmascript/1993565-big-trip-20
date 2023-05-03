@@ -1,7 +1,9 @@
 import { createElement } from '../render.js';
 
 
-function createTripBoardTemplate() { return ( `<section class="trip-events">  </section>`) }
+function createTripBoardTemplate() {
+  return (`<section class="trip-events">  </section>`);
+}
 
 export default class EventTripBoardView {
   getTemplate() {
@@ -20,6 +22,5 @@ export default class EventTripBoardView {
     this.element = null;
   }
 }
-
 
 

@@ -9,19 +9,19 @@ export default class BoardPresenter {
   boardComponent = new EventTripBoardView();
   taskListComponent = new TripEventListView();
 
-constructor({boardContainer}) {
+  constructor({boardContainer}) {
     this.boardContainer = boardContainer;
   }
 
-init() {
+  init() {
     render(this.boardComponent, this.boardContainer);
     render(new SortView(), this.boardComponent.getElement());
     render(this.taskListComponent, this.boardComponent.getElement());
     render(new EditPointView(), this.taskListComponent.getElement());
 
 
-     for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 3; i++) {
       render(new PointTripView(), this.taskListComponent.getElement());
     }
- }
+  }
 }

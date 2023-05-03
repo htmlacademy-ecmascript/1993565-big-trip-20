@@ -1,8 +1,7 @@
-import { createElement } from "../render.js";
-
+import { createElement } from '../render.js';
 
 function createEmptyListTemplate() {
-return (`<div class="page-body__container">
+  return `<div class="page-body__container">
         <section class="trip-events">
           <h2 class="visually-hidden">Trip events</h2>
 
@@ -16,10 +15,10 @@ return (`<div class="page-body__container">
               * Future — 'There are no future events now'.
           -->
         </section>
-      </div>`)
-    }
+      </div>`;
+}
 
-    export default class NewEmptyListView {
+export default class NewEmptyListView {
   getTemplate() {
     return createEmptyListTemplate();
   }

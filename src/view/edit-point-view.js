@@ -1,8 +1,7 @@
-import { createElement } from '../render.js';
-
+import { createElement } from "../render.js";
 
 function createEditPointTemplate() {
-return (`<li class="trip-events__item">
+  return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
                 <header class="event__header">
                   <div class="event__type-wrapper">
@@ -156,9 +155,8 @@ return (`<li class="trip-events__item">
                   </section>
                 </section>
               </form>
-            </li>`)
+            </li>`;
 }
-
 
 export default class EditPointView {
   getTemplate() {
@@ -177,11 +175,3 @@ export default class EditPointView {
     this.element = null;
   }
 }
-
-
-
-
-
-
-
-
