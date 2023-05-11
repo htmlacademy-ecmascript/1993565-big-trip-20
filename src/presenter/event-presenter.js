@@ -1,5 +1,5 @@
 import { render } from '../render.js';
-import EventTripBoardView from '../view/trip-board-view.js';
+
 import SortView from '../view/sort-view.js';
 import TripEventListView from '../view/trip-events-list-view.js';
 import PointTripView from '../view/point-trip-view.js';
@@ -24,10 +24,9 @@ export default class BoardPresenter {
       new EditPointView({ trip: this.boardDestinations[0] }),
       this.tripListComponent.getElement()
     );
-    console.log(this.boardDestinations[0]);
+
 
     for (let i = 0; i < this.boardDestinations.length; i++) {
-      console.log(this.tripListComponent.getElement(), '');
       render(
         new PointTripView({ pointTrip: this.boardDestinations[i] }),
         this.tripListComponent.getElement()

@@ -12,7 +12,7 @@ const getRandomDate = (minDaysGap, maxDaysGap) => {
   return dayjs().add(daysGap, 'day').toDate();
 };
 
-const humanizeDueDate = (dueDate) => dueDate ? dayjs(dueDate).format(DATE_FORMAT) : '';
+const humanizeDueDate = (dueDate) => dueDate ? dayjs(dueDate).format('MMM DD') : '';
 
 
 const generatetDateTime = (date) => dayjs(date).format('YYYY-MM-DThh:mm');

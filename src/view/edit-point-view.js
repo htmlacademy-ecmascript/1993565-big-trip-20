@@ -5,18 +5,15 @@ import {
   DESTINATIONS_DESCRIPTIONS,
 } from '../const.js';
 import {
-  humanizeDueDate,
-  generateDate,
   getRandomArrayElement,
   getRandomInteger,
-  humanizeHour,
-  duration,
+
 } from '../utils.js';
 
 const createEditPointTemplate = (tripPoint) => {
   const {
     basePrice,
-    destination,
+    //destination,
     /*dateFrom, dateTo,*/ type /*offers*/,
   } = tripPoint;
 

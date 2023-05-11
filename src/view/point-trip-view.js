@@ -1,7 +1,7 @@
 import { createElement } from '../render.js';
-import dayjs from 'dayjs';
+
 import {
-  humanizeDueDate,
+  //humanizeDueDate,
   generateDate,
   getRandomArrayElement,
   getRandomInteger,
@@ -10,16 +10,16 @@ import {
 } from '../utils.js';
 import { OFFERS_OPTIONS, OFFERS_TYPE, DESTINATIONS_NAME } from '../const.js';
 
-const createPointTripTemplate = (pointTrip) => {
-  const { basePrice, dateFrom, dateTo, offers, isFavorite } = pointTrip;
-  const now = new Date().toLocaleTimeString().slice(0, -3);
+const createPointTripTemplate = (pointTrip) =>
+//const { basePrice, dateFrom, dateTo, offers, isFavorite } = pointTrip;
 
-  //const durationTime = duration(pointTrip.dateFrom, tripPoint.dateTo);
-  //const favoriteClassName = isFavorite
-  // ? 'event__favorite-btn--active'
-  //: 'event__favorite-btn';
 
-  return `<li class="trip-events__item">
+//const durationTime = duration(pointTrip.dateFrom, tripPoint.dateTo);
+//const favoriteClassName = isFavorite
+// ? 'event__favorite-btn--active'
+//: 'event__favorite-btn';
+
+  `<li class="trip-events__item">
               <div class="event">
                 <time class="event__date" datetime="2019-03-18"> ${generateDate()}</time>
                 <div class="event__type">
@@ -65,8 +65,6 @@ const createPointTripTemplate = (pointTrip) => {
                 </button>
               </div>
             </li>`;
-};
-
 export default class PointTripView {
   constructor(pointTrip) {
     this.pointTrip = pointTrip;

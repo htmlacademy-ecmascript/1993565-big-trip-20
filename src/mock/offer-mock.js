@@ -1,5 +1,4 @@
-import { getRandomInteger } from './utils.js';
-import { OFFERS_OPTIONS } from './const.js';
+
 
 export const generateOffer = (id) => ({
   type: taxi,
