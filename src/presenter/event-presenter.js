@@ -1,4 +1,4 @@
-import {render} from '../render.js';
+import { render } from '../render.js';
 import EventTripBoardView from '../view/trip-board-view.js';
 import SortView from '../view/sort-view.js';
 import TripEventListView from '../view/trip-events-list-view.js';
@@ -6,22 +6,32 @@ import PointTripView from '../view/point-trip-view.js';
 import EditPointView from '../view/edit-point-view.js';
 
 export default class BoardPresenter {
-  boardComponent = new EventTripBoardView();
-  taskListComponent = new TripEventListView();
+  container = null;
 
-  constructor({boardContainer}) {
-    this.boardContainer = boardContainer;
+  tripListComponent = new TripEventListView();
+
+  constructor({ container, destinationsModel }) {
+    this.container = container;
+    this.destinationsModel = destinationsModel;
   }
 
   init() {
-    render(this.boardComponent, this.boardContainer);
-    render(new SortView(), this.boardComponent.getElement());
-    render(this.taskListComponent, this.boardComponent.getElement());
-    render(new EditPointView(), this.taskListComponent.getElement());
+    this.boardDestinations = [...this.destinationsModel.getDestinations()];
 
+    render(new SortView(), this.container);
+    render(this.tripListComponent, this.container);
+    render(
+      new EditPointView({ trip: this.boardDestinations[0] }),
+      this.tripListComponent.getElement()
+    );
+    console.log(this.boardDestinations[0]);
 
-    for (let i = 0; i < 3; i++) {
-      render(new PointTripView(), this.taskListComponent.getElement());
+    for (let i = 0; i < this.boardDestinations.length; i++) {
+      console.log(this.tripListComponent.getElement(), '');
+      render(
+        new PointTripView({ pointTrip: this.boardDestinations[i] }),
+        this.tripListComponent.getElement()
+      );
     }
   }
 }
