@@ -17,7 +17,6 @@ export default class BoardPresenter {
 
   init() {
     this.boardDestinations = [...this.destinationsModel.getDestinations()];
-    console.log(this.boardDestinations)
 
     render(new SortView(), this.container);
     render(this.tripListComponent, this.container);

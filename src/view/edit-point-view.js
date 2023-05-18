@@ -8,8 +8,6 @@ import {
   getRandomArrayElement,
   getRandomInteger,
 
-
-
 } from '../utils.js';
 
 const createEditPointTemplate = (tripPoint) => {
