@@ -8,13 +8,16 @@ import {
   getRandomArrayElement,
   getRandomInteger,
 
+
+
 } from '../utils.js';
 
 const createEditPointTemplate = (tripPoint) => {
+  //debugger;
   const {
     basePrice,
     //destination,
-    /*dateFrom, dateTo,*/ type /*offers*/,
+    dateFrom, dateTo, type /*offers*/,
   } = tripPoint;
 
   const createType = (currentType) =>
@@ -50,11 +53,6 @@ const createEditPointTemplate = (tripPoint) => {
     return result;
   };
 
-  //const photoComponent = destination.find((el) => (el.id === destination)).pictures[0].src;
-  //const photoDescriptionComponent = destination.find((el) => (el.id === destination)).pictures[0].description;
-  //const createPhotosTemplate = () => photoComponent.map((picture) =>
-  //`<img class="event__photo" src=${picture} alt='${photoDescriptionComponent}'>`);
-
   return `
   <form class="event event--edit" action="#" method="post">
   <header class="event__header">
@@ -87,10 +85,10 @@ const createEditPointTemplate = (tripPoint) => {
 
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="19/03/19 00:00">
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom} 00:00">
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="19/03/19 00:00">
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo} 00:00">
     </div>
 
     <div class="event__field-group  event__field-group--price">
@@ -119,12 +117,7 @@ const createEditPointTemplate = (tripPoint) => {
     DESTINATIONS_DESCRIPTIONS
   )}</p>
 
-      <div class="event__photos-container">
-        <div class="event__photos-tape">
-         $ {createPhotosTemplate().join('')}
 
-        </div>
-      </div>
     </section>
   </section>
 </form>

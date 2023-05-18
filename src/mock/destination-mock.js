@@ -1,9 +1,9 @@
-import { getRandomArrayElement } from '../utils.js';
+import { getRandomArrayElement, getRandomInteger } from '../utils.js';
 import { DESTINATIONS_NAME, DESTINATIONS_DESCRIPTIONS } from '../const.js';
 // точка назначения, финиш
 
 export const generateDestination = () => ({
-  id: getRandomArrayElement(0, 3),
+  id: getRandomInteger(0, 3),
   description: getRandomArrayElement(DESTINATIONS_DESCRIPTIONS),
   name: getRandomArrayElement(DESTINATIONS_NAME),
   pictures: [
