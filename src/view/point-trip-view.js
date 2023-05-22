@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 import {
   //humanizeDueDate,
@@ -65,24 +65,28 @@ const createPointTripTemplate = (pointTrip) =>
                 </button>
               </div>
             </li>`;
-export default class PointTripView {
-  constructor(pointTrip) {
-    this.pointTrip = pointTrip;
+export default class PointTripView extends AbstractView {
+  #pointTrip = null;
+  #handleRollupClick = null;
+
+  constructor({pointTrip, onRollupClick}) {
+    super();
+    this.#pointTrip = pointTrip;
+    this.#handleRollupClick = onRollupClick;
+
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editCLickHandler);
+
   }
 
-  getTemplate() {
-    return createPointTripTemplate(this.pointTrip);
+  get template() {
+    return createPointTripTemplate(this.#pointTrip);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  #editCLickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleRollupClick();
+  };
 
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
 }

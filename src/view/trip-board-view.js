@@ -1,23 +1,14 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
+
 
 function createTripBoardTemplate() {
   return '<section class="trip-events">  </section>';
 }
 
-export default class EventTripBoardView {
-  getTemplate() {
+export default class EventTripBoardView extends AbstractView {
+  get template() {
     return createTripBoardTemplate();
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
 
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
 }
