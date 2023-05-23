@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createEmptyListTemplate() {
   return `<div class="page-body__container">
@@ -18,20 +18,10 @@ function createEmptyListTemplate() {
       </div>`;
 }
 
-export default class NewEmptyListView {
-  getTemplate() {
+export default class NewEmptyListView extends AbstractView {
+  get template() {
     return createEmptyListTemplate();
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
 
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
 }

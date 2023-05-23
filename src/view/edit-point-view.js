@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {
   OFFERS_OPTIONS,
   OFFERS_TYPE,
@@ -7,13 +7,13 @@ import {
 import {
   getRandomArrayElement,
   getRandomInteger,
-
-
-
 } from '../utils.js';
+import {generatePoint} from '../mock/trip-point-mock.js';
+
+const mockPoint = generatePoint();
 
 const createEditPointTemplate = (tripPoint) => {
-  //debugger;
+
   const {
     basePrice,
     //destination,
@@ -54,6 +54,7 @@ const createEditPointTemplate = (tripPoint) => {
   };
 
   return `
+  <li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
   <header class="event__header">
     <div class="event__type-wrapper">
@@ -94,13 +95,16 @@ const createEditPointTemplate = (tripPoint) => {
     <div class="event__field-group  event__field-group--price">
       <label class="event__label" for="event-price-1">
         <span class="visually-hidden">Price</span>
-        ${basePrice}&euro;
+        ${tripPoint.basePrice}&euro;
       </label>
       <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="">
     </div>
 
-    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    <button class="event__reset-btn" type="reset">Cancel</button>
+       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+          <button class="event__reset-btn" type="reset">Delete</button>
+          <button class="event__rollup-btn" type="button">
+            <span class="visually-hidden">Open event</span>
+          </button>
   </header>
   <section class="event__details">
     <section class="event__section  event__section--offers">
@@ -121,26 +125,40 @@ const createEditPointTemplate = (tripPoint) => {
     </section>
   </section>
 </form>
+</li>
 `;
 };
-export default class EditPointView {
-  constructor(tripPoint) {
-    this.tripPoint = tripPoint;
+export default class EditPointView extends AbstractView {
+
+  #tripPoint = null;
+  #handleRollupClick = null;
+  #handleFormSubmit = null;
+
+
+  constructor({tripPoint = mockPoint, onRollupClick, onFormSubmit}) {
+    super();
+    this.#tripPoint = tripPoint;
+    this.#handleRollupClick = onRollupClick;
+    this.#handleFormSubmit = onFormSubmit;
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#rollupClickHandler);
+
+    this.element.querySelector('form')
+      .addEventListener('submit', this.#formSubmitHandler);
   }
 
-  getTemplate() {
-    return createEditPointTemplate(this.tripPoint);
+  get template() {
+    return createEditPointTemplate(this.#tripPoint);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  #rollupClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleRollupClick();
+  };
 
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 }

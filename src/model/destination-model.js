@@ -1,9 +1,9 @@
 import {generatePoint} from '../mock/trip-point-mock.js';
 
 export default class DestinationsModel {
-  destinations = Array.from({length: 3}, generatePoint);
+  #destinations = Array.from({length: 7}, generatePoint);
 
-  getDestinations() {
-    return this.destinations;
+  get destinations() {
+    return this.#destinations;
   }
 }
