@@ -3,8 +3,6 @@ import { OFFERS_TYPE } from '../const.js';
 import dayjs from 'dayjs';
 import {nanoid} from 'nanoid';
 
-
-
 export const generatePoint = () => ({
   basePrice: getRandomInteger(100, 900),
   dateFrom: dayjs('2019-01-25'). format('DD/MM/YY HH:mm') ,

@@ -1,14 +1,9 @@
-import {render, replace} from '../framework/render.js';
+import {render} from '../framework/render.js';
 import SortView from '../view/sort-view.js';
 import TripEventListView from '../view/trip-events-list-view.js';
 import NewEmptyListView from '../view/list-empty-view.js';
 import TripPresenter from './trip-presenter.js';
 import {updateItem} from '../utils.js';
-
-function updateModel(models, updatedModel) {
-  return models.map((item) => item.id === updatedModel.id ? updatedModel : item);
-}
-
 
 export default class BoardPresenter {
   #container = null;

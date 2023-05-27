@@ -9,7 +9,7 @@ const pageHeader = document.querySelector('.page-header');
 
 const siteHeaderElement = document.querySelector('.trip-main');
 
-const filtersElement = pageHeader.querySelector('.trip-controls__filters');
+//const filtersElement = pageHeader.querySelector('.trip-controls__filters');
 
 const destinationsModel = new DestinationsModel();
 const boardPresenter = new BoardPresenter({
