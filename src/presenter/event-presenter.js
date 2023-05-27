@@ -10,7 +10,7 @@ export default class BoardPresenter {
   #destinationsModel = null;
 
   #tripListComponent = new TripEventListView();
-
+  #sortComponent = null;
 
   #tripPoints = [];
   #tripsPresenters = new Map();
@@ -30,7 +30,7 @@ export default class BoardPresenter {
     const tripPoints = [...this.#destinationsModel.destinations];
 
 
-    render(new SortView(), this.#container);
+    //render(new SortView(), this.#container);
     render(this.#tripListComponent, this.#container);
 
 
@@ -46,6 +46,20 @@ export default class BoardPresenter {
 
   }
 
+
+  #handleSortTypeChange = (sortType) => {
+    // - Сортируем задачи
+    // - Очищаем список
+    // - Рендерим список заново
+  };
+
+  #renderSort() {
+    this.#sortComponent = new SortView({
+      onSortTypeChange: this.#handleSortTypeChange
+    });
+
+    render(this.#sortComponent, this.#container);
+  }
 
   #handleModeChange = () => {
     this.#tripsPresenters.forEach((presenter) => presenter.resetView());
