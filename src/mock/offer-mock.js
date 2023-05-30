@@ -1,5 +1,3 @@
-
-
 export const generateOffer = (id) => ({
   type: 'taxi',
   offers: [

@@ -12,5 +12,4 @@ export default class TripEventListView extends AbstractView {
     return createNewTripEventListTemplate();
   }
 
-
 }

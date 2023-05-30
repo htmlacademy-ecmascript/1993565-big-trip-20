@@ -4,13 +4,16 @@ import {render} from './framework/render.js';
 import BoardPresenter from './presenter/event-presenter.js';
 import DestinationsModel from './model/destination-model.js';
 
-const siteMainElement = document.querySelector('.trip-events');
+const tripEventsElement = document.querySelector('.trip-events');
+const pageHeader = document.querySelector('.page-header');
 
 const siteHeaderElement = document.querySelector('.trip-main');
 
+//const filtersElement = pageHeader.querySelector('.trip-controls__filters');
+
 const destinationsModel = new DestinationsModel();
 const boardPresenter = new BoardPresenter({
-  container: siteMainElement,
+  container: tripEventsElement,
   destinationsModel,
 });
 

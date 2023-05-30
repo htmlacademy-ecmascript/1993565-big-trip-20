@@ -1,84 +1,55 @@
-import {render, replace} from '../framework/render.js';
-
+import {render} from '../framework/render.js';
 import SortView from '../view/sort-view.js';
 import TripEventListView from '../view/trip-events-list-view.js';
-import PointTripView from '../view/point-trip-view.js';
-import EditPointView from '../view/edit-point-view.js';
 import NewEmptyListView from '../view/list-empty-view.js';
+import TripPresenter from './trip-presenter.js';
+import {updateItem} from '../utils.js';
 
 export default class BoardPresenter {
   #container = null;
   #destinationsModel = null;
-  #boardDestinations = null;
+
   #tripListComponent = new TripEventListView();
+
+
+  #tripPoints = [];
+  #tripsPresenters = new Map();
 
   constructor({ container, destinationsModel }) {
     this.#container = container;
     this.#destinationsModel = destinationsModel;
   }
 
+
+  #handleChange = (updatedTask) => {
+    this.#tripPoints = updateItem(this.#tripPoints, updatedTask);
+    this.#tripsPresenters.get(updatedTask.id).init(updatedTask);
+  };
+
   init() {
     const tripPoints = [...this.#destinationsModel.destinations];
+
 
     render(new SortView(), this.#container);
     render(this.#tripListComponent, this.#container);
 
+
     for (const tripPoint of tripPoints) {
-      this.#renderTripEdit(tripPoint);
+      const tripPointsPresenter = new TripPresenter({tripPointsContainer: this.#tripListComponent.element, onDataChange: this.#handleChange, onModeChange: this.#handleModeChange});
+      tripPointsPresenter.init(tripPoint);
+      this.#tripsPresenters.set(tripPoint.id, tripPointsPresenter);
 
     }
-
-
     if (tripPoints.length === 0) {
       render(new NewEmptyListView(), this.#container);
     }
 
   }
 
-  #renderTrip(trip) {
-    const tripComponent = new PointTripView({trip});
-    render(tripComponent, this.#tripListComponent.element);
-  }
 
-  #renderTripEdit(trip) {
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceFormToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-
-    const tripPointComponent = new PointTripView({
-      trip,
-      onRollupClick: () => {
-        replacePointToForm();
-        document.addEventListener('keydown', escKeyDownHandler);
-      }
-    });
-
-    const tripPointEditComponent = new EditPointView({
-      trip,
-      onRollupClick: () => {
-        replaceFormToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      },
-      onFormSubmit: () => {
-        replaceFormToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    });
-
-    function replaceFormToPoint() {
-      replace(tripPointComponent, tripPointEditComponent);
-    }
-
-    function replacePointToForm() {
-      replace(tripPointEditComponent, tripPointComponent);
-    }
-
-    render(tripPointComponent, this.#tripListComponent.element);
-  }
+  #handleModeChange = () => {
+    this.#tripsPresenters.forEach((presenter) => presenter.resetView());
+  };
 
 
 }

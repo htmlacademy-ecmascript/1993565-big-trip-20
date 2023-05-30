@@ -1,7 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
-
-
 const createFiltersTemplate = () => `
     <form class="trip-filters" action="#" method="get">
                 <div class="trip-filters__filter">
