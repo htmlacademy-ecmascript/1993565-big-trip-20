@@ -27,7 +27,6 @@ const duration = (start, end) => {
   return dayjs(endDate.diff(startDate, 'm')).format('HH[H] mm[M]');
 };
 
-
 function updateItem(items, update) {
   return items.map((item) => item.id === update.id ? update : item);
 };

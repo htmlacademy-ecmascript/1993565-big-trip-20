@@ -45,10 +45,18 @@ const DESTINATIONS_DESCRIPTIONS = [
   'Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.',
 ];
 
+const SORT_TYPE = {
+  DAY: 'day',
+  TIME_LONG: 'time-long',
+  PRICE_UP: 'price-up',
+};
+
+
 export {
   WAYPOINT_COUNT,
   OFFERS_TYPE,
   OFFERS_OPTIONS,
   DESTINATIONS_NAME,
   DESTINATIONS_DESCRIPTIONS,
+  SORT_TYPE
 };
