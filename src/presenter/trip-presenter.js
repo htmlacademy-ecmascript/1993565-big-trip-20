@@ -21,14 +21,12 @@ export default class TripPresenter {
   #mode = Mode.DEFAULT;
   #destinationArr = [];
 
-
   constructor({tripPointsContainer,onDataChange, onModeChange }) {
     this.#tripPointsContainer = tripPointsContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
 
   }
-
 
   init(tripPoint, destinationArr) {
     const prevTripPointComponent = this.#tripPointComponent;
