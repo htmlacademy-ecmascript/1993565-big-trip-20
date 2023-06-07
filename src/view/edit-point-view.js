@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {
   OFFERS_OPTIONS,
   OFFERS_TYPE,
@@ -8,17 +8,43 @@ import {
   getRandomArrayElement,
   getRandomInteger,
 } from '../utils.js';
-import {generatePoint} from '../mock/trip-point-mock.js';
 
-const mockPoint = generatePoint();
 
-const createEditPointTemplate = (tripPoint) => {
+const BLANK_POINT =
+  {
+    basePrice: 0,
+    destination: {
+      description: '',
+      name: '',
+      pictures: []
+    },
+    dateFrom: '',
+    dateTo: '',
+    isFavorite: false,
+    offers: [],
+    type: 'taxi'
+  };
 
+const createEditPointTemplate = (tripPoint, destinationMap) => {
+  const destination = destinationMap.get(tripPoint.destination)
+  console.log(destinationMap);
   const {
-    basePrice,
-    //destination,
+    basePrice, /*destination,*/
     dateFrom, dateTo, type /*offers*/,
   } = tripPoint;
+
+  const createDestinationsTemplate = (destinationMap) => {
+    let result = '';
+
+    for (const destination of destinationMap.values()) {
+      result += (
+        `
+        <option value="${destination.name}"></option>
+        `
+      );
+    }
+    return result;
+  };
 
   const createType = (currentType) =>
     OFFERS_TYPE.map(
@@ -53,6 +79,11 @@ const createEditPointTemplate = (tripPoint) => {
     return result;
   };
 
+  const destinationTrip = destinationMap.get(tripPoint.destination);
+
+  const destinationsTemplate = createDestinationsTemplate(destinationMap);
+
+
   return `
   <li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -74,13 +105,12 @@ const createEditPointTemplate = (tripPoint) => {
 
     <div class="event__field-group  event__field-group--destination">
       <label class="event__label  event__type-output" for="event-destination-1">
-        ${getRandomArrayElement(OFFERS_TYPE)}
+        ${tripPoint.type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Geneva" list="destination-list-1">
-      <datalist id="destination-list-1">
-        <option value="Amsterdam"></option>
-        <option value="Geneva"></option>
-        <option value="Chamonix"></option>
+
+       <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
+            <datalist id="destination-list-1">
+        ${destinationsTemplate}
       </datalist>
     </div>
 
@@ -128,37 +158,67 @@ const createEditPointTemplate = (tripPoint) => {
 </li>
 `;
 };
-export default class EditPointView extends AbstractView {
+export default class EditPointView extends AbstractStatefulView {
 
   #tripPoint = null;
   #handleRollupClick = null;
   #handleFormSubmit = null;
+  #destinationMap;
 
 
-  constructor({tripPoint = mockPoint, onRollupClick, onFormSubmit}) {
+  constructor({tripPoint = BLANK_POINT, destinationMap, onRollupClick, onFormSubmit}) {
     super();
-    this.#tripPoint = tripPoint;
+    this._setState(EditPointView.parseTripToState(tripPoint));
     this.#handleRollupClick = onRollupClick;
     this.#handleFormSubmit = onFormSubmit;
+    this.#destinationMap = destinationMap;
+    this._restoreHandlers();
 
+  }
+
+  get template() {
+    return createEditPointTemplate(this._state, this.#destinationMap);
+  }
+
+  static parseTripToState(tripPoint) {
+    return {...tripPoint,
+      type: tripPoint.type,
+      destination: tripPoint.destination
+    };
+  }
+
+  #rollupClickHandler = (evt) => {
+    this.#handleRollupClick();
+  };
+
+  #formSubmitHandler = (evt) => {
+    this.#handleFormSubmit(EditPointView.parseTripToState(this._state));
+  };
+
+
+  _restoreHandlers() {
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#rollupClickHandler);
 
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
+
+    const tripTypes = this.element.querySelectorAll('input[name=event-type]');
+    for (const tripType of tripTypes) {
+      tripType.addEventListener('change', () => {
+        this.updateElement({type: tripType.value});
+      });
+    }
+
+    const destination = this.element.querySelector('input[name=event-destination]');
+
+    destination.addEventListener('change', () => {
+      for (const destinat of this.#destinationMap.values()) {
+
+        if (destinat.name === destination.value) {
+          this.updateElement({destination: destinat.id});
+        }
+      }
+    });
   }
-
-  get template() {
-    return createEditPointTemplate(this.#tripPoint);
-  }
-
-  #rollupClickHandler = (evt) => {
-    evt.preventDefault();
-    this.#handleRollupClick();
-  };
-
-  #formSubmitHandler = (evt) => {
-    evt.preventDefault();
-    this.#handleFormSubmit(this.#tripPoint);
-  };
 }

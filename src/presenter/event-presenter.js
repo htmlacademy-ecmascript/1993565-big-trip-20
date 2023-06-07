@@ -10,27 +10,33 @@ import {sortByPrice, sortByDay, sortByDuration} from '../sort-utils.js';
 
 export default class BoardPresenter {
   #container = null;
-  #destinationsModel = null;
+  #tripsModel = null;
 
   #tripListComponent = new TripEventListView();
   #sortComponent = null;
 
   #tripPoints = [];
   #tripsPresenters = new Map();
+  #destinationMap = new Map();
+
 
   #currentSortType = SORT_TYPE.DAY;
   #sourcedBoardTrips = [];
 
- constructor({ container, destinationsModel }) {
+ constructor({ container, tripsModel, destinationModels }) {
     this.#container = container;
-    this.#destinationsModel = destinationsModel;
+    this.#tripsModel = tripsModel;
+    if (destinationModels) {
+      for (const destination of destinationModels.destinations) {
+        this.#destinationMap.set(destination.id, destination);
+      }
+    }
   }
 
  init() {
-    this.#tripPoints = [...this.#destinationsModel.destinations];
-    this.#sourcedBoardTrips = [...this.#destinationsModel.destinations];
+    this.#tripPoints = [...this.#tripsModel.destinations];
+    this.#sourcedBoardTrips = [...this.#tripsModel.destinations];
     this.#renderSort();
-    console.log(this.#tripPoints);
     this.#renderTripList();
     this.#renderTripPoints();
 
@@ -39,12 +45,14 @@ export default class BoardPresenter {
       render(new NewEmptyListView(), this.#container);
     }
 
+
+
   }
 
   #handleChange = (updatedTrip) => {
     this.#tripPoints = updateItem(this.#tripPoints, updatedTrip);
     this.#sourcedBoardTrips = updateItem(this.#sourcedBoardTrips, updatedTrip);
-    this.#tripsPresenters.get(updatedTrip.id).init(updatedTrip);
+    this.#tripsPresenters.get(updatedTrip.id).init(updatedTrip, this.#destinationMap);
   };
 
 
@@ -87,10 +95,9 @@ export default class BoardPresenter {
   };
 
   #renderTripPoints() {
-
-    for (const tripPoint of this.#tripPoints) {
+        for (const tripPoint of this.#tripPoints) {
       const tripPointsPresenter = new TripPresenter({tripPointsContainer: this.#tripListComponent.element, onDataChange: this.#handleChange, onModeChange: this.#handleModeChange});
-      tripPointsPresenter.init(tripPoint);
+      tripPointsPresenter.init(tripPoint, this.#destinationMap);
       this.#tripsPresenters.set(tripPoint.id, tripPointsPresenter);
     }
   }
