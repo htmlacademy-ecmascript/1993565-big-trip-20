@@ -216,31 +216,31 @@ export default class EditPointView extends AbstractStatefulView {
 
 
   #setStartDatepicker() {
-      // flatpickr есть смысл инициализировать только в случае,
-      // если поле выбора даты доступно для заполнения
-      this.#dateStartPicker = flatpickr(
-        this.element.querySelector('input[name=event-start-time]'),
-        {
-          dateFormat: 'j/m/y H:i',
-          enableTime: true,
-          defaultDate: this._state.dateStart,
-          onChange: this.#dueDateChangeHandler, // На событие flatpickr передаём наш колбэк
-        },
-      );
+    // flatpickr есть смысл инициализировать только в случае,
+    // если поле выбора даты доступно для заполнения
+    this.#dateStartPicker = flatpickr(
+      this.element.querySelector('input[name=event-start-time]'),
+      {
+        dateFormat: 'j/m/y H:i',
+        enableTime: true,
+        defaultDate: this._state.dateStart,
+        onChange: this.#dueDateChangeHandler, // На событие flatpickr передаём наш колбэк
+      },
+    );
   }
 
   #setEndDatepicker() {
-      // flatpickr есть смысл инициализировать только в случае,
-      // если поле выбора даты доступно для заполнения
-      this.#dateEndPicker = flatpickr(
-        this.element.querySelector('input[name=event-end-time]'),
-        {
-          dateFormat: 'j/m/y H:i',
-          enableTime: true,
-          defaultDate: this._state.dateEnd,
-          onChange: this.#dueDateChangeHandler, // На событие flatpickr передаём наш колбэк
-        },
-      );
+    // flatpickr есть смысл инициализировать только в случае,
+    // если поле выбора даты доступно для заполнения
+    this.#dateEndPicker = flatpickr(
+      this.element.querySelector('input[name=event-end-time]'),
+      {
+        dateFormat: 'j/m/y H:i',
+        enableTime: true,
+        defaultDate: this._state.dateEnd,
+        onChange: this.#dueDateChangeHandler, // На событие flatpickr передаём наш колбэк
+      },
+    );
   }
 
   _restoreHandlers() {
