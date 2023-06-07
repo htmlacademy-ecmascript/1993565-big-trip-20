@@ -7,14 +7,13 @@ import {
   humanizeHour,
   duration,
 } from '../utils.js';
-import { OFFERS_OPTIONS, OFFERS_TYPE, DESTINATIONS_NAME } from '../const.js';
-
+import { OFFERS_OPTIONS } from '../const.js';
 
 
 const createPointTripTemplate = (tripPoint) => {
+  const { basePrice, dateFrom, dateTo, offers, isFavorite } = tripPoint;
   const startTime = humanizeHour(tripPoint.dateFrom);
   const endTime = humanizeHour(tripPoint.dateTo);
-  const { basePrice, dateFrom, dateTo, offers, isFavorite } = tripPoint;
   const durationTime = duration(tripPoint.dateFrom, tripPoint.dateTo);
   const favoriteClassName = tripPoint.isFavorite ? 'event__favorite-btn--active' : '';
 

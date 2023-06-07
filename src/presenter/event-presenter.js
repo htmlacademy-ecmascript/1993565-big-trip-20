@@ -24,7 +24,7 @@ export default class BoardPresenter {
   #currentSortType = SORT_TYPE.DAY;
   #sourcedBoardTrips = [];
 
- constructor({ container, tripsModel, destinationModels }) {
+  constructor({ container, tripsModel, destinationModels }) {
     this.#container = container;
     this.#tripsModel = tripsModel;
     if (destinationModels) {
@@ -37,7 +37,7 @@ export default class BoardPresenter {
 
   }
 
- init() {
+  init() {
     this.#tripPoints = [...this.#tripsModel.destinations];
     this.#sourcedBoardTrips = [...this.#tripsModel.destinations];
     this.#renderSort();
@@ -48,7 +48,6 @@ export default class BoardPresenter {
     if (this.#tripPoints.length === 0) {
       render(new NewEmptyListView(), this.#container);
     }
-
 
 
   }
@@ -80,7 +79,7 @@ export default class BoardPresenter {
 
 
   #renderTripList() {
-       render(this.#tripListComponent, this.#container);
+    render(this.#tripListComponent, this.#container);
 
   }
 
@@ -91,15 +90,15 @@ export default class BoardPresenter {
       return;
     }
 
-     this.#sortTrips(sortType);
+    this.#sortTrips(sortType);
     // - Очищаем список
-      this.#clearTripList();
+    this.#clearTripList();
     // - Рендерим список заново
-      this.#renderTripPoints();
+    this.#renderTripPoints();
   };
 
   #renderTripPoints() {
-        for (const tripPoint of this.#tripPoints) {
+    for (const tripPoint of this.#tripPoints) {
       const tripPointsPresenter = new TripPresenter({tripPointsContainer: this.#tripListComponent.element, onDataChange: this.#handleChange, onModeChange: this.#handleModeChange});
       tripPointsPresenter.init(tripPoint, this.#destinationArr);
       this.#tripsPresenters.set(tripPoint.id, tripPointsPresenter);
@@ -118,7 +117,7 @@ export default class BoardPresenter {
     this.#tripsPresenters.forEach((presenter) => presenter.resetView());
   };
 
-   #clearTripList() {
+  #clearTripList() {
     this.#tripsPresenters.forEach((presenter) => presenter.destroy());
     this.#tripsPresenters.clear();
   }

@@ -1,5 +1,5 @@
-import { getRandomInteger,getRandomArrayElement } from '../utils.js';
-import { OFFERS_TYPE, DESTINATIONS_NAME } from '../const.js';
+import { getRandomInteger, } from '../utils.js';
+import { OFFERS_TYPE, } from '../const.js';
 import dayjs from 'dayjs';
 import {nanoid} from 'nanoid';
 

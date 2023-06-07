@@ -27,10 +27,8 @@ const BLANK_POINT =
 
 const createEditPointTemplate = (tripPoint, destinationArr) => {
 
-
-
   const {
-    basePrice, /*destination,*/
+    /*basePrice, destination,*/
     dateFrom, dateTo, type /*offers*/,
   } = tripPoint;
 

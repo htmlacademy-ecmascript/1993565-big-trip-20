@@ -6,11 +6,9 @@ import TripPointsModel from './model/trip-models.js';
 import DestinationsModel from './model/destination-models.js';
 
 const tripEventsElement = document.querySelector('.trip-events');
-const pageHeader = document.querySelector('.page-header');
 
 const siteHeaderElement = document.querySelector('.trip-main');
 
-//const filtersElement = pageHeader.querySelector('.trip-controls__filters');
 const destinationModels = new DestinationsModel();
 
 const tripsModel = new TripPointsModel(destinationModels.destinations);
