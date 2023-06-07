@@ -1,7 +1,22 @@
 import {generatePoint} from '../mock/trip-point-mock.js';
+import {getRandomArrayElement} from '../utils.js'
 
 export default class TripPointsModel {
-  #destinations = Array.from({length: 7}, generatePoint);
+
+  #destinations  = []
+
+  constructor(passedDestinations) {
+
+
+this.#destinations = Array(7).fill(true).map(() => {
+
+    return generatePoint(getRandomArrayElement(passedDestinations).name)
+
+  })
+
+}
+
+
 
   get destinations() {
     return this.#destinations;

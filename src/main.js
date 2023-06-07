@@ -12,7 +12,9 @@ const siteHeaderElement = document.querySelector('.trip-main');
 
 //const filtersElement = pageHeader.querySelector('.trip-controls__filters');
 const destinationModels = new DestinationsModel();
-const tripsModel = new TripPointsModel();
+
+const tripsModel = new TripPointsModel(destinationModels.destinations);
+
 const boardPresenter = new BoardPresenter({
   container: tripEventsElement,
   tripsModel,

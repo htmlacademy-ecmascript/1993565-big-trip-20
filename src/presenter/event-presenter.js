@@ -18,6 +18,7 @@ export default class BoardPresenter {
   #tripPoints = [];
   #tripsPresenters = new Map();
   #destinationMap = new Map();
+  #destinationArr = [];
 
 
   #currentSortType = SORT_TYPE.DAY;
@@ -31,6 +32,9 @@ export default class BoardPresenter {
         this.#destinationMap.set(destination.id, destination);
       }
     }
+
+    this.#destinationArr = destinationModels.destinations;
+
   }
 
  init() {
@@ -52,7 +56,7 @@ export default class BoardPresenter {
   #handleChange = (updatedTrip) => {
     this.#tripPoints = updateItem(this.#tripPoints, updatedTrip);
     this.#sourcedBoardTrips = updateItem(this.#sourcedBoardTrips, updatedTrip);
-    this.#tripsPresenters.get(updatedTrip.id).init(updatedTrip, this.#destinationMap);
+    this.#tripsPresenters.get(updatedTrip.id).init(updatedTrip, this.#destinationArr);
   };
 
 
@@ -97,7 +101,7 @@ export default class BoardPresenter {
   #renderTripPoints() {
         for (const tripPoint of this.#tripPoints) {
       const tripPointsPresenter = new TripPresenter({tripPointsContainer: this.#tripListComponent.element, onDataChange: this.#handleChange, onModeChange: this.#handleModeChange});
-      tripPointsPresenter.init(tripPoint, this.#destinationMap);
+      tripPointsPresenter.init(tripPoint, this.#destinationArr);
       this.#tripsPresenters.set(tripPoint.id, tripPointsPresenter);
     }
   }

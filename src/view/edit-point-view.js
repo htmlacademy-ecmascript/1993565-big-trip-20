@@ -25,21 +25,22 @@ const BLANK_POINT =
     type: 'taxi'
   };
 
-const createEditPointTemplate = (tripPoint, destinationMap) => {
-  const destination = destinationMap.get(tripPoint.destination)
-  console.log(destinationMap);
+const createEditPointTemplate = (tripPoint, destinationArr) => {
+
+
+
   const {
     basePrice, /*destination,*/
     dateFrom, dateTo, type /*offers*/,
   } = tripPoint;
 
-  const createDestinationsTemplate = (destinationMap) => {
+  const createDestinationsTemplate = (destinationArr) => {
     let result = '';
+    for (const destination of destinationArr) {
 
-    for (const destination of destinationMap.values()) {
       result += (
         `
-        <option value="${destination.name}"></option>
+        <option value="${destination.name}"> ${destination.name}</option>
         `
       );
     }
@@ -79,9 +80,7 @@ const createEditPointTemplate = (tripPoint, destinationMap) => {
     return result;
   };
 
-  const destinationTrip = destinationMap.get(tripPoint.destination);
-
-  const destinationsTemplate = createDestinationsTemplate(destinationMap);
+  const destinationsTemplate = createDestinationsTemplate(destinationArr);
 
 
   return `
@@ -108,7 +107,7 @@ const createEditPointTemplate = (tripPoint, destinationMap) => {
         ${tripPoint.type}
       </label>
 
-       <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
+       <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${tripPoint.destination}" list="destination-list-1">
             <datalist id="destination-list-1">
         ${destinationsTemplate}
       </datalist>
@@ -163,21 +162,21 @@ export default class EditPointView extends AbstractStatefulView {
   #tripPoint = null;
   #handleRollupClick = null;
   #handleFormSubmit = null;
-  #destinationMap;
+  #destinationArr;
 
 
-  constructor({tripPoint = BLANK_POINT, destinationMap, onRollupClick, onFormSubmit}) {
+  constructor({tripPoint = BLANK_POINT, destinationArr, onRollupClick, onFormSubmit}) {
     super();
     this._setState(EditPointView.parseTripToState(tripPoint));
     this.#handleRollupClick = onRollupClick;
     this.#handleFormSubmit = onFormSubmit;
-    this.#destinationMap = destinationMap;
+    this.#destinationArr = destinationArr;
     this._restoreHandlers();
 
   }
 
   get template() {
-    return createEditPointTemplate(this._state, this.#destinationMap);
+    return createEditPointTemplate(this._state, this.#destinationArr);
   }
 
   static parseTripToState(tripPoint) {
@@ -213,10 +212,10 @@ export default class EditPointView extends AbstractStatefulView {
     const destination = this.element.querySelector('input[name=event-destination]');
 
     destination.addEventListener('change', () => {
-      for (const destinat of this.#destinationMap.values()) {
+      for (const destinat of this.#destinationArr) {
 
         if (destinat.name === destination.value) {
-          this.updateElement({destination: destinat.id});
+          this.updateElement({destination: destinat.name});
         }
       }
     });
