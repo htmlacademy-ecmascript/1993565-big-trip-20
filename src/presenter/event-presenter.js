@@ -3,10 +3,11 @@ import SortView from '../view/sort-view.js';
 import TripEventListView from '../view/trip-events-list-view.js';
 import NewEmptyListView from '../view/list-empty-view.js';
 import TripPresenter from './trip-presenter.js';
-import {updateItem} from '../utils.js';
-import {SORT_TYPE} from '../const.js';
+//import {updateItem} from '../utils.js';
+import {SORT_TYPE, UPDATETYPE, USERACTION} from '../const.js';
 import {sortByPrice, sortByDay, sortByDuration} from '../sort-utils.js';
 
+const TRIP_COUNT_PER_STEP = 7;
 
 export default class BoardPresenter {
   #container = null;
@@ -15,18 +16,20 @@ export default class BoardPresenter {
   #tripListComponent = new TripEventListView();
   #sortComponent = null;
 
-  #tripPoints = [];
+  //#tripPoints = [];
   #tripsPresenters = new Map();
   #destinationMap = new Map();
   #destinationArr = [];
 
 
+
   #currentSortType = SORT_TYPE.DAY;
-  #sourcedBoardTrips = [];
+  //#sourcedBoardTrips = [];
 
   constructor({ container, tripsModel, destinationModels }) {
     this.#container = container;
     this.#tripsModel = tripsModel;
+    this.#tripsModel.addObserver(this.#handleModelEvent);
     if (destinationModels) {
       for (const destination of destinationModels.destinations) {
         this.#destinationMap.set(destination.id, destination);
@@ -37,30 +40,81 @@ export default class BoardPresenter {
 
   }
 
+  get trips() {
+    switch (this.#currentSortType) {
+      case SORT_TYPE.DAY:
+       return [...this.#tripsModel.destinations].sort(sortByDay);
+      case SORT_TYPE.TIME_LONG:
+       return [...this.#tripsModel.destinations].sort(sortByDuration);
+      case SORT_TYPE.PRICE_UP:
+       return [...this.#tripsModel.destinations].sort(sortByPrice);
+      }
+    return this.#tripsModel.destinations;
+  }
+
   init() {
-    this.#tripPoints = [...this.#tripsModel.destinations];
-    this.#sourcedBoardTrips = [...this.#tripsModel.destinations];
+    //this.#tripPoints = [...this.#tripsModel.destinations];
+    //this.#sourcedBoardTrips = [...this.#tripsModel.destinations];
     this.#renderSort();
     this.#renderTripList();
     this.#renderTripPoints();
 
 
-    if (this.#tripPoints.length === 0) {
-      render(new NewEmptyListView(), this.#container);
+    /*if (this.#tripPoints.length === 0) {
+      render(new NewEmptyListView(), this.#container); */
     }
 
 
-  }
 
-  #handleChange = (updatedTrip) => {
+
+  /* #handleChange = (updatedTrip) => {
     this.#tripPoints = updateItem(this.#tripPoints, updatedTrip);
     this.#sourcedBoardTrips = updateItem(this.#sourcedBoardTrips, updatedTrip);
     this.#tripsPresenters.get(updatedTrip.id).init(updatedTrip, this.#destinationArr);
+  }; */
+
+     #handleViewAction = (actionType, updateType, update) => {
+    console.log(actionType, updateType, update);
+    // Здесь будем вызывать обновление модели.
+    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
+    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
+    // update - обновленные данные
+    switch (actionType) {
+      case USERACTION.UPDATE_TASK:
+        this.#tripsModel.updateTask(updateType, update);
+        break;
+      case USERACTION.ADD_TASK:
+        this.#tripsModel.addTask(updateType, update);
+        break;
+      case USERACTION.DELETE_TASK:
+        this.#tripsModel.deleteTask(updateType, update);
+        break;
   };
+}
+
+    #handleModelEvent = (updateType, data) => {
+    console.log(updateType, data);
+    // В зависимости от типа изменений решаем, что делать:
+    // - обновить часть списка (например, когда поменялось описание)
+    // - обновить список (например, когда задача ушла в архив)
+    // - обновить всю доску (например, при переключении фильтра)
+     switch (updateType) {
+      case UPDATETYPE.PATCH:
+        // - обновить часть списка (например, когда поменялось описание)
+        this.#tripsPresenters.get(data.id).init(data);
+        break;
+      case UPDATETYPE.MINOR:
+        // - обновить список (например, когда задача ушла в архив)
+        break;
+      case UPDATETYPE.MAJOR:
+        // - обновить всю доску (например, при переключении фильтра)
+        break;
+  };
+}
 
 
-  #sortTrips(sortType) {
-    switch (sortType) {
+  /* #sortTrips(sortType) {
+    /*switch (sortType) {
       case SORT_TYPE.DAY:
         this.#tripPoints.sort(sortByDay);
         break;
@@ -75,11 +129,14 @@ export default class BoardPresenter {
     }
 
     this.#currentSortType = sortType;
-  }
+  } */
 
 
   #renderTripList() {
+    const tripCount = this.trips.length;
+    const trips = this.trips.slice(0, Math.min(tripCount, TRIP_COUNT_PER_STEP));
     render(this.#tripListComponent, this.#container);
+    this.#renderTripPoints(trips);
 
   }
 
@@ -90,7 +147,8 @@ export default class BoardPresenter {
       return;
     }
 
-    this.#sortTrips(sortType);
+    //this.#sortTrips(sortType);
+    this.#currentSortType = sortType;
     // - Очищаем список
     this.#clearTripList();
     // - Рендерим список заново
@@ -98,10 +156,10 @@ export default class BoardPresenter {
   };
 
   #renderTripPoints() {
-    for (const tripPoint of this.#tripPoints) {
-      const tripPointsPresenter = new TripPresenter({tripPointsContainer: this.#tripListComponent.element, onDataChange: this.#handleChange, onModeChange: this.#handleModeChange});
-      tripPointsPresenter.init(tripPoint, this.#destinationArr);
-      this.#tripsPresenters.set(tripPoint.id, tripPointsPresenter);
+    for (const trip of this.trips) {
+      const tripPointsPresenter = new TripPresenter({tripPointsContainer: this.#tripListComponent.element, onDataChange: this.#handleViewAction, onModeChange: this.#handleModeChange});
+      tripPointsPresenter.init(trip, this.#destinationArr);
+      this.#tripsPresenters.set(trip.id, tripPointsPresenter);
     }
   }
 

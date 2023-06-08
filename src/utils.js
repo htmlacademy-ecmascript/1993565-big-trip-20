@@ -27,9 +27,6 @@ const duration = (start, end) => {
   return dayjs(endDate.diff(startDate, 'm')).format('HH[H] mm[M]');
 };
 
-function updateItem(items, update) {
-  return items.map((item) => item.id === update.id ? update : item);
-}
 
 const humanizeDate = (date) => dayjs(date).format('DD MMM');
-export { getRandomInteger, getRandomDate, generatetDateTime, getRandomArrayElement, generateDate, humanizeHour, humanizeDate, humanizeDueDate, duration, updateItem};
+export { getRandomInteger, getRandomDate, generatetDateTime, getRandomArrayElement, generateDate, humanizeHour, humanizeDate, humanizeDueDate, duration};
