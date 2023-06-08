@@ -3,7 +3,7 @@ const WAYPOINT_COUNT = 5;
 const OFFERS_TYPE = [
   'Taxi',
   'Bus',
-  'Train',
+  'train',
   'Ship',
   'Drive',
   'Flight',

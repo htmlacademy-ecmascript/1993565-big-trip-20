@@ -1,20 +1,18 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import {
-  //humanizeDueDate,
   generateDate,
   getRandomArrayElement,
   getRandomInteger,
   humanizeHour,
   duration,
 } from '../utils.js';
-import { OFFERS_OPTIONS, OFFERS_TYPE, DESTINATIONS_NAME } from '../const.js';
-
+import { OFFERS_OPTIONS } from '../const.js';
 
 
 const createPointTripTemplate = (tripPoint) => {
+  const { basePrice, dateFrom, dateTo, offers, isFavorite } = tripPoint;
   const startTime = humanizeHour(tripPoint.dateFrom);
   const endTime = humanizeHour(tripPoint.dateTo);
-  const { basePrice, dateFrom, dateTo, offers, isFavorite } = tripPoint;
   const durationTime = duration(tripPoint.dateFrom, tripPoint.dateTo);
   const favoriteClassName = tripPoint.isFavorite ? 'event__favorite-btn--active' : '';
 
@@ -24,7 +22,7 @@ const createPointTripTemplate = (tripPoint) => {
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="img/icons/${tripPoint.type}.png" alt="Event type icon">
                 </div>
-                <h3 class="event__title">${tripPoint.type/*getRandomArrayElement(OFFERS_TYPE)*/} ${getRandomArrayElement(DESTINATIONS_NAME)}</h3>
+                <h3 class="event__title">${tripPoint.type} ${tripPoint.destination}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
                     <time class="event__start-time" datetime="${tripPoint.dateFrom}">${startTime}</time>

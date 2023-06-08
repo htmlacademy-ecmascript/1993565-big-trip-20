@@ -10,27 +10,37 @@ import {sortByPrice, sortByDay, sortByDuration} from '../sort-utils.js';
 
 export default class BoardPresenter {
   #container = null;
-  #destinationsModel = null;
+  #tripsModel = null;
 
   #tripListComponent = new TripEventListView();
   #sortComponent = null;
 
   #tripPoints = [];
   #tripsPresenters = new Map();
+  #destinationMap = new Map();
+  #destinationArr = [];
+
 
   #currentSortType = SORT_TYPE.DAY;
   #sourcedBoardTrips = [];
 
- constructor({ container, destinationsModel }) {
+  constructor({ container, tripsModel, destinationModels }) {
     this.#container = container;
-    this.#destinationsModel = destinationsModel;
+    this.#tripsModel = tripsModel;
+    if (destinationModels) {
+      for (const destination of destinationModels.destinations) {
+        this.#destinationMap.set(destination.id, destination);
+      }
+    }
+
+    this.#destinationArr = destinationModels.destinations;
+
   }
 
- init() {
-    this.#tripPoints = [...this.#destinationsModel.destinations];
-    this.#sourcedBoardTrips = [...this.#destinationsModel.destinations];
+  init() {
+    this.#tripPoints = [...this.#tripsModel.destinations];
+    this.#sourcedBoardTrips = [...this.#tripsModel.destinations];
     this.#renderSort();
-    console.log(this.#tripPoints);
     this.#renderTripList();
     this.#renderTripPoints();
 
@@ -39,12 +49,13 @@ export default class BoardPresenter {
       render(new NewEmptyListView(), this.#container);
     }
 
+
   }
 
   #handleChange = (updatedTrip) => {
     this.#tripPoints = updateItem(this.#tripPoints, updatedTrip);
     this.#sourcedBoardTrips = updateItem(this.#sourcedBoardTrips, updatedTrip);
-    this.#tripsPresenters.get(updatedTrip.id).init(updatedTrip);
+    this.#tripsPresenters.get(updatedTrip.id).init(updatedTrip, this.#destinationArr);
   };
 
 
@@ -68,7 +79,7 @@ export default class BoardPresenter {
 
 
   #renderTripList() {
-       render(this.#tripListComponent, this.#container);
+    render(this.#tripListComponent, this.#container);
 
   }
 
@@ -79,18 +90,17 @@ export default class BoardPresenter {
       return;
     }
 
-     this.#sortTrips(sortType);
+    this.#sortTrips(sortType);
     // - Очищаем список
-      this.#clearTripList();
+    this.#clearTripList();
     // - Рендерим список заново
-      this.#renderTripPoints();
+    this.#renderTripPoints();
   };
 
   #renderTripPoints() {
-
     for (const tripPoint of this.#tripPoints) {
       const tripPointsPresenter = new TripPresenter({tripPointsContainer: this.#tripListComponent.element, onDataChange: this.#handleChange, onModeChange: this.#handleModeChange});
-      tripPointsPresenter.init(tripPoint);
+      tripPointsPresenter.init(tripPoint, this.#destinationArr);
       this.#tripsPresenters.set(tripPoint.id, tripPointsPresenter);
     }
   }
@@ -107,7 +117,7 @@ export default class BoardPresenter {
     this.#tripsPresenters.forEach((presenter) => presenter.resetView());
   };
 
-   #clearTripList() {
+  #clearTripList() {
     this.#tripsPresenters.forEach((presenter) => presenter.destroy());
     this.#tripsPresenters.clear();
   }
