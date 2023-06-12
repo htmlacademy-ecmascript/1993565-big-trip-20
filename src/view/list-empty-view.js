@@ -1,26 +1,33 @@
 import AbstractView from '../framework/view/abstract-view.js';
+import {FILTER_TYPE} from '../const.js';
 
-function createEmptyListTemplate() {
-  return `<div class="page-body__container">
-        <section class="trip-events">
-          <h2 class="visually-hidden">Trip events</h2>
+const EmptyTripFilterType = {
+  [FILTER_TYPE.EVERYTHING]: 'Click New Event to create your first point',
+  [FILTER_TYPE.PAST]: 'There are no past events now',
+  [FILTER_TYPE.PRESENT]: 'There are no present events now',
+  [FILTER_TYPE.FUTURE]: 'There are no future events now',
+};
 
-          <p class="trip-events__msg">Click New Event to create your first point</p>
-
-          <!--
-            Значение отображаемого текста зависит от выбранного фильтра:
-              * Everthing – 'Click New Event to create your first point'
-              * Past — 'There are no past events now';
-              * Present — 'There are no present events now';
-              * Future — 'There are no future events now'.
-          -->
-        </section>
-      </div>`;
+function createEmptyListTemplate(filterType) {
+  const text = EmptyTripFilterType[filterType];
+  return (
+    `<p class="trip-events__msg">
+      ${text}
+    </p>`
+  );
 }
 
+
 export default class NewEmptyListView extends AbstractView {
+  #filterType;
+  constructor({filterType}) {
+    super();
+    this.#filterType = filterType;
+  }
+
   get template() {
-    return createEmptyListTemplate();
+
+    return createEmptyListTemplate(this.#filterType);
   }
 
 

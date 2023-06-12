@@ -62,6 +62,13 @@ const UPDATETYPE = {
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
 };
+const FILTER_TYPE = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
+};
+
 
 export {
   WAYPOINT_COUNT,
@@ -72,4 +79,6 @@ export {
   SORT_TYPE,
   USERACTION,
   UPDATETYPE,
+  FILTER_TYPE,
+
 };

@@ -3,12 +3,12 @@ import {getRandomArrayElement} from '../utils.js';
 
 import Observable from '../framework/observable.js';
 
-export default class TripPointsModel extends Observable  {
+export default class TripPointsModel extends Observable {
 
   #destinations = [];
 
   constructor(passedDestinations) {
-  super();
+    super();
     this.#destinations = Array(7).fill(true).map(() => generatePoint(getRandomArrayElement(passedDestinations).name));
   }
 
@@ -16,7 +16,7 @@ export default class TripPointsModel extends Observable  {
     return this.#destinations;
   }
 
- updateTrip(updateType, update) {
+  updateTrip(updateType, update) {
     const index = this.#destinations.findIndex((destination) => destination.id === update.id);
 
     if (index === -1) {

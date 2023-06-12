@@ -4,43 +4,36 @@ import {
   OFFERS_TYPE,
   DESTINATIONS_DESCRIPTIONS,
 } from '../const.js';
-import {
-  getRandomArrayElement,
-  getRandomInteger,
-} from '../utils.js';
+import { getRandomArrayElement, getRandomInteger } from '../utils.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
+import he from 'he';
 
-const BLANK_POINT =
-  {
-    basePrice: 0,
-    destination: {
-      description: '',
-      name: '',
-      pictures: []
-    },
-    dateFrom: '',
-    dateTo: '',
-    isFavorite: false,
-    offers: [],
-    type: 'taxi'
-  };
+const BLANK_POINT = {
+  basePrice: 0,
+  destination: '',
+  dateFrom: '',
+  dateTo: '',
+  isFavorite: false,
+  offers: [],
+  type: 'taxi',
+};
 
 const createEditPointTemplate = (tripPoint, destinationArr) => {
-
   const {
-    /*basePrice, destination,*/
-    dateFrom, dateTo, type /*offers*/,
+    basePrice, /*destination,*/
+    dateFrom,
+    dateTo,
+    type /*offers*/,
   } = tripPoint;
 
   const createDestinationsTemplate = (destinationArr) => {
     let result = '';
     for (const destination of destinationArr) {
-
-      result += (
-        `
+      result += `
         <option value="${destination.name}"> ${destination.name}</option>
-        `
-      );
+        `;
     }
     return result;
   };
@@ -105,7 +98,9 @@ const createEditPointTemplate = (tripPoint, destinationArr) => {
         ${tripPoint.type}
       </label>
 
-       <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${tripPoint.destination}" list="destination-list-1">
+       <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${
+  he.encode(tripPoint.destination)
+}" list="destination-list-1">
             <datalist id="destination-list-1">
         ${destinationsTemplate}
       </datalist>
@@ -122,9 +117,11 @@ const createEditPointTemplate = (tripPoint, destinationArr) => {
     <div class="event__field-group  event__field-group--price">
       <label class="event__label" for="event-price-1">
         <span class="visually-hidden">Price</span>
-        ${tripPoint.basePrice}&euro;
+        &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="">
+      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${
+  tripPoint.basePrice
+}">
     </div>
 
        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -156,21 +153,28 @@ const createEditPointTemplate = (tripPoint, destinationArr) => {
 `;
 };
 export default class EditPointView extends AbstractStatefulView {
-
   #tripPoint = null;
   #handleRollupClick = null;
   #handleFormSubmit = null;
   #destinationArr;
+  #dateStartPicker = null;
+  #dateEndPicker = null;
+  #handleDeleteClick = null;
 
-
-  constructor({tripPoint = BLANK_POINT, destinationArr, onRollupClick, onFormSubmit}) {
+  constructor({
+    tripPoint = BLANK_POINT,
+    destinationArr,
+    onRollupClick,
+    onFormSubmit,
+    onDeleteClick,
+  }) {
     super();
     this._setState(EditPointView.parseTripToState(tripPoint));
     this.#handleRollupClick = onRollupClick;
     this.#handleFormSubmit = onFormSubmit;
     this.#destinationArr = destinationArr;
+    this.#handleDeleteClick = onDeleteClick;
     this._restoreHandlers();
-
   }
 
   get template() {
@@ -178,9 +182,10 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   static parseTripToState(tripPoint) {
-    return {...tripPoint,
+    return {
+      ...tripPoint,
       type: tripPoint.type,
-      destination: tripPoint.destination
+      destination: tripPoint.destination,
     };
   }
 
@@ -192,30 +197,107 @@ export default class EditPointView extends AbstractStatefulView {
     this.#handleFormSubmit(EditPointView.parseTripToState(this._state));
   };
 
+  #startTimeChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateFrom: userDate,
+    });
+  };
 
+  #dateEndChangeHandler = ([userDate]) => {
+
+    this.updateElement({
+      dateTo: userDate,
+    });
+  };
+
+  #setStartDatepicker() {
+    this.#dateStartPicker = flatpickr(
+      this.element.querySelector('input[name=event-start-time]'),
+      {
+        dateFormat: 'j/m/y H:i',
+        enableTime: true,
+        defaultDate: this._state.dateStart,
+        onChange: this.#startTimeChangeHandler, // На событие flatpickr передаём наш колбэк
+      }
+    );
+  }
+
+  #setEndDatepicker() {
+    // flatpickr есть смысл инициализировать только в случае,
+    // если поле выбора даты доступно для заполнения
+    this.#dateEndPicker = flatpickr(
+      this.element.querySelector('input[name=event-end-time]'),
+      {
+        dateFormat: 'j/m/y H:i',
+        enableTime: true,
+        defaultDate: this._state.dateEnd,
+        onChange: this.#dateEndChangeHandler, // На событие flatpickr передаём наш колбэк
+      }
+    );
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#dateStartPicker) {
+      this.#dateStartPicker.destroy();
+      this.#dateStartPicker = null;
+    }
+    if (this.#dateEndPicker) {
+      this.#dateEndPicker.destroy();
+      this.#dateEndPicker = null;
+    }
+  }
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(EditPointView.parseStateToTrip(this._state));
+  };
+
+  #formPriceHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({
+      basePrice: evt.target.value,
+    });
+  };
+
+
+  static parseStateToTrip = (state) => ({...state});
   _restoreHandlers() {
-    this.element.querySelector('.event__rollup-btn')
+    this.element
+      .querySelector('.event__rollup-btn')
       .addEventListener('click', this.#rollupClickHandler);
 
-    this.element.querySelector('form')
+    this.element
+      .querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
+
+    this.element
+      .querySelector('.event__reset-btn')
+      .addEventListener('click', this.#formDeleteClickHandler);
 
     const tripTypes = this.element.querySelectorAll('input[name=event-type]');
     for (const tripType of tripTypes) {
       tripType.addEventListener('change', () => {
-        this.updateElement({type: tripType.value});
+        this.updateElement({ type: tripType.value });
       });
     }
 
-    const destination = this.element.querySelector('input[name=event-destination]');
+    this.element.querySelector('input[name=event-price]')
+      .addEventListener('change', this.#formPriceHandler);
+
+    const destination = this.element.querySelector(
+      'input[name=event-destination]'
+    );
 
     destination.addEventListener('change', () => {
       for (const destinat of this.#destinationArr) {
-
         if (destinat.name === destination.value) {
-          this.updateElement({destination: destinat.name});
+          this.updateElement({ destination: destinat.name });
         }
       }
     });
+    this.#setStartDatepicker();
+    this.#setEndDatepicker();
   }
 }
