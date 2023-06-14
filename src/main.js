@@ -32,11 +32,11 @@ const newTripButtonComponent = new NewEventButtonView({
 });
 
 function handleNewTripFormClose() {
-  newTripButtonComponent.element.disabled = false;
+  newTripButtonComponent.enabled;
 }
 function handleNewTripButtonClick() {
   boardPresenter.createTrip();
-  newTripButtonComponent.element.disabled = true;
+  newTripButtonComponent.disabled;
 }
 
 const filterPresenter = new FilterPresenter({
