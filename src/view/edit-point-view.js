@@ -4,6 +4,7 @@ import {
   OFFERS_TYPE,
   DESTINATIONS_DESCRIPTIONS,
 } from '../const.js';
+
 import { getRandomArrayElement, getRandomInteger } from '../utils.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -19,6 +20,7 @@ const BLANK_POINT = {
   offers: [],
   type: 'taxi',
 };
+
 
 const createEditPointTemplate = (tripPoint, destinationArr) => {
   const {
@@ -181,6 +183,19 @@ export default class EditPointView extends AbstractStatefulView {
     return createEditPointTemplate(this._state, this.#destinationArr);
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this.#dateStartPicker) {
+      this.#dateStartPicker.destroy();
+      this.#dateStartPicker = null;
+    }
+    if (this.#dateEndPicker) {
+      this.#dateEndPicker.destroy();
+      this.#dateEndPicker = null;
+    }
+  }
+
   static parseTripToState(tripPoint) {
     return {
       ...tripPoint,
@@ -197,6 +212,7 @@ export default class EditPointView extends AbstractStatefulView {
     this.#handleFormSubmit(EditPointView.parseTripToState(this._state));
   };
 
+
   #startTimeChangeHandler = ([userDate]) => {
     this.updateElement({
       dateFrom: userDate,
@@ -211,6 +227,7 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #setStartDatepicker() {
+
     this.#dateStartPicker = flatpickr(
       this.element.querySelector('input[name=event-start-time]'),
       {
@@ -219,6 +236,20 @@ export default class EditPointView extends AbstractStatefulView {
         defaultDate: this._state.dateStart,
         onChange: this.#startTimeChangeHandler, // На событие flatpickr передаём наш колбэк
       }
+    );
+  }
+
+  #setEndDatepicker() {
+    // flatpickr есть смысл инициализировать только в случае,
+    // если поле выбора даты доступно для заполнения
+    this.#dateEndPicker = flatpickr(
+      this.element.querySelector('input[name=event-end-time]'),
+      {
+        dateFormat: 'j/m/y H:i',
+        enableTime: true,
+        defaultDate: this._state.dateEnd,
+        onChange: this.#dueDateChangeHandler, // На событие flatpickr передаём наш колбэк
+      },
     );
   }
 
