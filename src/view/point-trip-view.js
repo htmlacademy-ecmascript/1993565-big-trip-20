@@ -13,7 +13,8 @@ const createPointTripTemplate = (tripPoint) => {
   const { basePrice, dateFrom, dateTo, offers, isFavorite } = tripPoint;
   const startTime = humanizeHour(tripPoint.dateFrom);
   const endTime = humanizeHour(tripPoint.dateTo);
-  const durationTime = duration(tripPoint.dateFrom, tripPoint.dateTo);
+  const durationTime = duration(dateFrom, dateTo);
+  const humanDura = humanizeHour(durationTime);
   const favoriteClassName = tripPoint.isFavorite ? 'event__favorite-btn--active' : '';
 
   return `<li class="trip-events__item">
@@ -29,7 +30,7 @@ const createPointTripTemplate = (tripPoint) => {
                     —
                     <time class="event__end-time" datetime="${tripPoint.dateTo}">${endTime}</time>
                   </p>
-                  <p class="event__duration"> ${durationTime}</p>
+                  <p class="event__duration"> ${humanDura}</p>
                 </div>
                 <p class="event__price">
                   €&nbsp;<span class="event__price-value"> ${tripPoint.basePrice}</span>

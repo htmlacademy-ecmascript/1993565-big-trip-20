@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {FILTER_TYPE} from './const.js';
 
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -21,15 +22,31 @@ const generateDate = (date) => dayjs(date).format('MMMM D');
 
 const humanizeHour = (hour) => dayjs(hour).format('HH:MM');
 
-const duration = (start, end) => {
-  const startDate = dayjs(start);
-  const endDate = dayjs(end);
-  return dayjs(endDate.diff(startDate, 'm')).format('HH[H] mm[M]');
-};
+const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 
-function updateItem(items, update) {
-  return items.map((item) => item.id === update.id ? update : item);
+const duration = (dateFrom, dateTo) => dayjs(dateTo).diff(dayjs(dateFrom));
+
+function isInThePast(date) {
+  return date && dayjs().isAfter(date, 'D');
 }
 
+function isCurrentDate(dateFrom, dateTo) {
+  return dateFrom && dateTo
+    && !isInThePast(dateTo)
+    && !isInFuture(dateFrom);
+}
+
+function isInFuture(date) {
+  return date && dayjs().isBefore(date, 'D');
+}
+
+
+const filter = {
+  [FILTER_TYPE.EVERYTHING]: (tripPoints) => tripPoints,
+  [FILTER_TYPE.PAST]: (tripPoints) => tripPoints.filter((tripPoint) => isInThePast(tripPoint.dateTo)),
+  [FILTER_TYPE.PRESENT]: (tripPoints) => tripPoints.filter((tripPoint) => isCurrentDate(tripPoint.dateFrom, tripPoint.dateTo)),
+  [FILTER_TYPE.FUTURE]: (tripPoints) => tripPoints.filter((tripPoint) => isInFuture(tripPoint.dateFrom)),
+};
+
 const humanizeDate = (date) => dayjs(date).format('DD MMM');
-export { getRandomInteger, getRandomDate, generatetDateTime, getRandomArrayElement, generateDate, humanizeHour, humanizeDate, humanizeDueDate, duration, updateItem};
+export { getRandomInteger, getRandomDate, generatetDateTime, getRandomArrayElement, generateDate, humanizeHour, humanizeDate, humanizeDueDate, duration, isDatesEqual, filter};

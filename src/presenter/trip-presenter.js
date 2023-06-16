@@ -1,6 +1,8 @@
 import {render, replace, remove} from '../framework/render.js';
 import PointTripView from '../view/point-trip-view.js';
 import EditPointView from '../view/edit-point-view.js';
+import {USERACTION, UPDATETYPE} from '../const.js';
+import {isDatesEqual} from '../utils.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -49,7 +51,8 @@ export default class TripPresenter {
       tripPoint,
       destinationArr,
       onRollupClick: this.#handleRollupClick(),
-      onFormSubmit: this.#handleFormSubmit()
+      onFormSubmit: this.#handleFormSubmit(),
+      onDeleteClick: this.#handleDeleteClick
     });
 
     if (prevTripPointComponent === null || prevTripPointEditComponent === null) {
@@ -70,6 +73,8 @@ export default class TripPresenter {
   }
 
   #handleFavoriteClick = () => {
+    USERACTION.UPDATE_TASK,
+    UPDATETYPE.MINOR,
     this.#handleDataChange({...this.#tripPoint, isFavorite: !this.#tripPoint.isFavorite});
   };
 
@@ -78,9 +83,14 @@ export default class TripPresenter {
     remove(this.#tripPointEditComponent);
   }
 
-  #handleFormSubmit(tripPoint) {
+  #handleFormSubmit(update) {
     return () => {
-      this.#handleDataChange(tripPoint);
+      const isMinorUpdate =
+      !isDatesEqual(this.#tripPoint.dateFrom, update.dateFrom);
+      this.#handleDataChange(
+        USERACTION.UPDATE_TRIP,
+        UPDATETYPE.MINOR,
+        tripPoint);
 
       this.#replaceFormToPoint();
       document.removeEventListener('keydown', this.#escKeyDownHandler);
@@ -101,6 +111,13 @@ export default class TripPresenter {
     }
   };
 
+  #handleDeleteClick = (trip) => {
+    this.#handleDataChange(
+      USERACTION.DELETE_TRIP,
+      UPDATETYPE.MINOR,
+      trip,
+    );
+  };
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
