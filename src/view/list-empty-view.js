@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {FILTER_TYPE} from '../const.js';
+import { FILTER_TYPE } from '../const.js';
 
 const EmptyTripFilterType = {
   [FILTER_TYPE.EVERYTHING]: 'Click New Event to create your first point',
@@ -10,25 +10,19 @@ const EmptyTripFilterType = {
 
 function createEmptyListTemplate(filterType) {
   const text = EmptyTripFilterType[filterType];
-  return (
-    `<p class="trip-events__msg">
+  return `<p class="trip-events__msg">
       ${text}
-    </p>`
-  );
+    </p>`;
 }
-
 
 export default class NewEmptyListView extends AbstractView {
   #filterType;
-  constructor({filterType}) {
+  constructor({ filterType }) {
     super();
     this.#filterType = filterType;
   }
 
   get template() {
-
     return createEmptyListTemplate(this.#filterType);
   }
-
-
 }

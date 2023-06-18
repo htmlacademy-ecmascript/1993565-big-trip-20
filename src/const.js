@@ -61,6 +61,7 @@ const UPDATETYPE = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 const FILTER_TYPE = {
   EVERYTHING: 'everything',
@@ -68,7 +69,6 @@ const FILTER_TYPE = {
   PRESENT: 'present',
   PAST: 'past',
 };
-
 
 export {
   WAYPOINT_COUNT,
@@ -80,5 +80,4 @@ export {
   USERACTION,
   UPDATETYPE,
   FILTER_TYPE,
-
 };

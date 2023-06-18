@@ -1,44 +1,72 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import {
-  generateDate,
-  getRandomArrayElement,
-  getRandomInteger,
   humanizeHour,
+  humanizeDueDate,
   duration,
 } from '../utils.js';
-import { OFFERS_OPTIONS } from '../const.js';
 
+const createPointTripTemplate = (tripPoint, destinationArr, typeToOffersMap) => {
+  function createOffersTemplate(offers) {
+    let result = '';
+    if (!offers) {
+      return result;
+    }
 
-const createPointTripTemplate = (tripPoint) => {
-  const { basePrice, dateFrom, dateTo, offers, isFavorite } = tripPoint;
+    for (const offer of offers) {
+      result += (
+        `<li class="event__offer">
+        <span class="event__offer-title">${offer.title}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${offer.price}</span>
+      </li>`
+      );
+    }
+
+    return result;
+  }
+  const date = humanizeDueDate(tripPoint.dateFrom);
   const startTime = humanizeHour(tripPoint.dateFrom);
   const endTime = humanizeHour(tripPoint.dateTo);
-  const durationTime = duration(dateFrom, dateTo);
+  const durationTime = duration(startTime, endTime);
   const humanDura = humanizeHour(durationTime);
-  const favoriteClassName = tripPoint.isFavorite ? 'event__favorite-btn--active' : '';
+  const destinationName = destinationArr.get(tripPoint.destination).name;
+  const offers = typeToOffersMap.get(tripPoint.type);
+  const favoriteClassName = tripPoint.isFavorite
+    ? 'event__favorite-btn--active'
+    : '';
 
   return `<li class="trip-events__item">
               <div class="event">
-                <time class="event__date" datetime="2019-03-18"> ${generateDate()}</time>
+                <time class="event__date" datetime="${tripPoint.dateFrom}">${date} </time>
                 <div class="event__type">
-                  <img class="event__type-icon" width="42" height="42" src="img/icons/${tripPoint.type}.png" alt="Event type icon">
+                  <img class="event__type-icon" width="42" height="42" src="img/icons/${
+  tripPoint.type
+}.png" alt="Event type icon">
                 </div>
-                <h3 class="event__title">${tripPoint.type} ${tripPoint.destination}</h3>
+                <h3 class="event__title">${tripPoint.type} ${
+  destinationName
+}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
-                    <time class="event__start-time" datetime="${tripPoint.dateFrom}">${startTime}</time>
+                    <time class="event__start-time" datetime="${
+  tripPoint.dateFrom
+}">${startTime}</time>
                     —
-                    <time class="event__end-time" datetime="${tripPoint.dateTo}">${endTime}</time>
+                    <time class="event__end-time" datetime="${
+  tripPoint.dateTo
+}">${endTime}</time>
                   </p>
                   <p class="event__duration"> ${humanDura}</p>
                 </div>
                 <p class="event__price">
-                  €&nbsp;<span class="event__price-value"> ${tripPoint.basePrice}</span>
+                  €&nbsp;<span class="event__price-value"> ${
+  tripPoint.basePrice
+}</span>
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
                 <ul class="event__selected-offers">
                   <li class="event__offer">
-                    ${getRandomArrayElement(OFFERS_OPTIONS)} +€ ${getRandomInteger(35, 90)}
+                    ${createOffersTemplate(offers)}
                   </li>
                 </ul>
                 <button class="event__favorite-btn  ${favoriteClassName}" type="button">
@@ -57,27 +85,28 @@ export default class PointTripView extends AbstractView {
   #tripPoint = null;
   #handleRollupClick = null;
   #handleFavoriteClick = null;
+  #destinationArr;
+  #typeToOffersMap;
 
-  constructor({tripPoint, onRollupClick, onFavoriteClick}) {
+  constructor({ tripPoint, destinationArr, typeToOffersMap, onRollupClick, onFavoriteClick }) {
     super();
+    this.#destinationArr = destinationArr;
     this.#tripPoint = tripPoint;
+    this.#typeToOffersMap = typeToOffersMap;
     this.#handleRollupClick = onRollupClick;
     this.#handleFavoriteClick = onFavoriteClick;
 
-    this.element.querySelector('.event__rollup-btn')
+    this.element
+      .querySelector('.event__rollup-btn')
       .addEventListener('click', this.#editCLickHandler);
 
-
-    this.element.querySelector('.event__favorite-btn')
+    this.element
+      .querySelector('.event__favorite-btn')
       .addEventListener('click', this.#favoriteClickHandler);
-
-
   }
 
-
   get template() {
-
-    return createPointTripTemplate(this.#tripPoint);
+    return createPointTripTemplate(this.#tripPoint, this.#destinationArr, this.#typeToOffersMap);
   }
 
   #editCLickHandler = (evt) => {
@@ -89,6 +118,4 @@ export default class PointTripView extends AbstractView {
     evt.preventDefault();
     this.#handleFavoriteClick();
   };
-
-
 }

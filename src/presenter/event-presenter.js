@@ -1,10 +1,11 @@
-import { render, remove } from '../framework/render.js';
+import { render, remove, RenderPosition } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
 import TripEventListView from '../view/trip-events-list-view.js';
 import NewEmptyListView from '../view/list-empty-view.js';
 import NewEventButtonView from '../view/new-event-button-view.js';
 import NewTripPresenter from './new-trip-presenter.js';
 import TripPresenter from './trip-presenter.js';
+import LoadView from '../view/loading-view.js';
 import { SORT_TYPE, UPDATETYPE, USERACTION, FILTER_TYPE } from '../const.js';
 import { sortByPrice, sortByDay, sortByDuration } from '../sort-utils.js';
 import { filter } from '../utils.js';
@@ -19,37 +20,52 @@ export default class BoardPresenter {
   #sortComponent = null;
 
   #tripsPresenters = new Map();
-  #destinationMap = new Map();
-  #destinationArr = [];
+
+  #destinationArr = new Map();
   #noTripComponent = null;
   #renderedTripCount = TRIP_COUNT_PER_STEP;
   #filterModel = null;
   #newEventButtonComponent = null;
   #newTripPresenter = null;
-
+  #loadingComponent = new LoadView();
+  #isLoading = true;
+  #destinationMap = new Map();
+  #typeToOffersMap = new Map();
+  #offersModel;
 
   #currentSortType = SORT_TYPE.DAY;
   #filterType = FILTER_TYPE.EVERYTHING;
 
-  constructor({ container, tripsModel, destinationModels, filterModel, onNewTripDestroy }) {
+  constructor({
+    container,
+    tripsModel,
+    destinationModels,
+    filterModel,
+    offersModel,
+    onNewTripDestroy,
+  }) {
     this.#container = container;
     this.#tripsModel = tripsModel;
     this.#filterModel = filterModel;
+    this.#offersModel = offersModel;
+
     this.#tripsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#offersModel.addObserver(this.#handleModelEvent);
     if (destinationModels) {
       for (const destination of destinationModels.destinations) {
         this.#destinationMap.set(destination.id, destination);
       }
     }
 
-    this.#destinationArr = destinationModels.destinations;
+    this.#destinationArr = this.#destinationMap;
 
     this.#newTripPresenter = new NewTripPresenter({
       tripListContainer: this.#tripListComponent.element,
       onDataChange: this.#handleViewAction,
       onDestroy: onNewTripDestroy,
-      destinationArr: this.#destinationArr
+      destinationArr: this.#destinationArr,
+      typeToOffersMap: this.#typeToOffersMap
     });
   }
 
@@ -57,7 +73,6 @@ export default class BoardPresenter {
     this.#filterType = this.#filterModel.filter;
     const trips = this.#tripsModel.destinations;
     const filteredTrips = filter[this.#filterType](trips);
-
 
     switch (this.#currentSortType) {
       case SORT_TYPE.DAY:
@@ -74,24 +89,28 @@ export default class BoardPresenter {
     this.#renderList();
   }
 
-
   createTrip() {
     this.#currentSortType = SORT_TYPE.DAY;
     this.#filterModel.setFilter(UPDATETYPE.MAJOR, FILTER_TYPE.EVERYTHING);
     this.#newTripPresenter.init();
   }
 
-
   #renderNewEventButton() {
     this.#newEventButtonComponent = new NewEventButtonView({
-      onClick: this.#handleNewEventButtonClick
+      onClick: this.#handleNewEventButtonClick,
     });
   }
 
   #handleNewEventButtonClick = () => {
     const tripCount = this.trips.length;
-    const newRenderedTaskCount = Math.min(tripCount, this.#renderedTripCount + TRIP_COUNT_PER_STEP);
-    const trips = this.trips.slice(this.#renderedTripCount, newRenderedTaskCount);
+    const newRenderedTaskCount = Math.min(
+      tripCount,
+      this.#renderedTripCount + TRIP_COUNT_PER_STEP
+    );
+    const trips = this.trips.slice(
+      this.#renderedTripCount,
+      newRenderedTaskCount
+    );
     this.#renderTrips(trips);
     this.#renderedTripCount = newRenderedTaskCount;
     if (this.#renderedTripCount >= tripCount) {
@@ -105,18 +124,14 @@ export default class BoardPresenter {
 
   #renderNoTrips() {
     this.#noTripComponent = new NewEmptyListView({
-      filterType: this.#filterType
+      filterType: this.#filterType,
     });
 
     render(this.#noTripComponent, this.#container);
   }
 
   #handleViewAction = (actionType, updateType, update) => {
-    console.log(actionType, updateType, update);
-    // Здесь будем вызывать обновление модели.
-    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
-    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-    // update - обновленные данные
+
     switch (actionType) {
       case USERACTION.UPDATE_TRIP:
         this.#tripsModel.updateTrip(updateType, update);
@@ -131,15 +146,11 @@ export default class BoardPresenter {
   };
 
   #handleModelEvent = (updateType, data) => {
-    console.log(updateType, data);
-    // В зависимости от типа изменений решаем, что делать:
-    // - обновить часть списка (например, когда поменялось описание)
-    // - обновить список (например, когда задача ушла в архив)
-    // - обновить всю доску (например, при переключении фильтра)
+
     switch (updateType) {
       case UPDATETYPE.PATCH:
         // - обновить часть списка (например, когда поменялось описание)
-        this.#tripsPresenters.get(data.id).init(data);
+        this.#tripsPresenters.get(data.id).init(data, this.#destinationArr);
         break;
       case UPDATETYPE.MINOR:
         // - обновить список (например, когда задача ушла в архив)
@@ -148,12 +159,23 @@ export default class BoardPresenter {
         break;
       case UPDATETYPE.MAJOR:
         // - обновить всю доску (например, при переключении фильтра)
-
-        this.#clearList({ resetRenderedTaskCount: true, resetSortType: true });
+        this.#clearList({ resetRenderedTripCount: true, resetSortType: true });
+        this.#renderList();
+        break;
+      case UPDATETYPE.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        for (const offerByType of this.#offersModel.offers) {
+          this.#typeToOffersMap.set(offerByType.type, offerByType.offers);
+        }
         this.#renderList();
         break;
     }
   };
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#container);
+  }
 
   #clearList({ resetRenderedTripCount = false, resetSortType = false } = {}) {
     this.#newTripPresenter.destroy();
@@ -162,6 +184,7 @@ export default class BoardPresenter {
 
     remove(this.#sortComponent);
     remove(this.#newEventButtonComponent);
+    remove(this.#loadingComponent);
 
     if (this.#noTripComponent) {
       remove(this.#noTripComponent);
@@ -172,36 +195,37 @@ export default class BoardPresenter {
       // На случай, если перерисовка доски вызвана
       // уменьшением количества задач (например, удаление или перенос в архив)
       // нужно скорректировать число показанных задач
-      this.#renderedTripCount = Math.min(this.trips.length, this.#renderedTripCount);
+      this.#renderedTripCount = Math.min(
+        this.trips.length,
+        this.#renderedTripCount
+      );
     }
-
 
     if (resetSortType) {
       this.#currentSortType = SORT_TYPE.DAY;
     }
   }
 
-
   #renderList() {
-
+    render(this.#tripListComponent, this.#container);
+    this.#renderSort();
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
     if (this.trips.length === 0) {
       this.#renderNoTrips();
       return;
     }
-    this.#renderSort();
-    render(this.#tripListComponent, this.#container);
+
     this.#renderTripPoints();
+
     if (this.trips.length > this.#renderedTripCount) {
       this.#renderNewEventButton();
     }
+
   }
 
-  #renderTripList() {
-    const tripCount = this.trips.length;
-    const trips = this.trips.slice(0, Math.min(tripCount, TRIP_COUNT_PER_STEP));
-    render(this.#tripListComponent, this.#container);
-    this.#renderTripPoints(trips);
-  }
 
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
@@ -210,20 +234,20 @@ export default class BoardPresenter {
 
     this.#currentSortType = sortType;
 
-
-    this.#clearList({ resetRenderedTripCount: true, });
+    this.#clearList({ resetRenderedTripCount: true });
 
     this.#renderList();
   };
 
   #renderTripPoints() {
     for (const trip of this.trips) {
+
       const tripPointsPresenter = new TripPresenter({
         tripPointsContainer: this.#tripListComponent.element,
         onDataChange: this.#handleViewAction,
         onModeChange: this.#handleModeChange,
       });
-      tripPointsPresenter.init(trip, this.#destinationArr);
+      tripPointsPresenter.init(trip, this.#destinationArr,this.#typeToOffersMap);
       this.#tripsPresenters.set(trip.id, tripPointsPresenter);
     }
   }
@@ -234,7 +258,7 @@ export default class BoardPresenter {
       onSortTypeChange: this.#handleSortTypeChange,
     });
 
-    render(this.#sortComponent, this.#container);
+    render(this.#sortComponent, this.#container, RenderPosition.AFTERBEGIN);
   }
 
   #handleModeChange = () => {

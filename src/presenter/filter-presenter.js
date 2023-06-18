@@ -17,7 +17,6 @@ export default class FilterPresenter {
 
     this.#tripsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
-
   }
 
   get filters() {
@@ -50,7 +49,6 @@ export default class FilterPresenter {
   };
 
   #handleFilterTypeChange = (filterType) => {
-
     if (this.#filterModel.filter === filterType) {
       return;
     }
