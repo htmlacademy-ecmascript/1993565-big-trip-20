@@ -1,5 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+
 import { OFFERS_TYPE} from '../const.js';
+
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -19,11 +21,13 @@ const BLANK_POINT = {
   type: 'taxi',
 };
 
+
 const createEditPointTemplate = (
   tripPoint,
   destinationArr,
   typeToOffersMap
 ) => {
+
   const createType = (currentType) =>
     OFFERS_TYPE.map(
       (pointType) =>
@@ -225,6 +229,19 @@ export default class EditPointView extends AbstractStatefulView {
     );
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this.#dateStartPicker) {
+      this.#dateStartPicker.destroy();
+      this.#dateStartPicker = null;
+    }
+    if (this.#dateEndPicker) {
+      this.#dateEndPicker.destroy();
+      this.#dateEndPicker = null;
+    }
+  }
+
   static parseTripToState(tripPoint) {
     return {
       ...tripPoint,
@@ -242,6 +259,7 @@ export default class EditPointView extends AbstractStatefulView {
     this.#handleFormSubmit(EditPointView.parseTripToState(this._state));
   };
 
+
   #startTimeChangeHandler = ([userDate]) => {
     this.updateElement({
       dateFrom: userDate,
@@ -255,6 +273,7 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #setStartDatepicker() {
+
     this.#dateStartPicker = flatpickr(
       this.element.querySelector('input[name=event-start-time]'),
       {
@@ -267,6 +286,20 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   #setEndDatepicker() {
+    this.#dateEndPicker = flatpickr(
+      this.element.querySelector('input[name=event-end-time]'),
+      {
+        dateFormat: 'j/m/y H:i',
+        enableTime: true,
+        defaultDate: this._state.dateEnd,
+        onChange: this.#dueDateChangeHandler, // На событие flatpickr передаём наш колбэк
+      },
+    );
+  }
+
+  #setEndDatepicker() {
+    // flatpickr есть смысл инициализировать только в случае,
+    // если поле выбора даты доступно для заполнения
     this.#dateEndPicker = flatpickr(
       this.element.querySelector('input[name=event-end-time]'),
       {
