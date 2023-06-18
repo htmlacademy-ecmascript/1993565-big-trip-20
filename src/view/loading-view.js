@@ -14,6 +14,4 @@ export default class LoadView extends AbstractView {
   get template() {
     return createLoadTemplate();
   }
-
-
 }

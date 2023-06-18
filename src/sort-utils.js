@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 
-
 function sortByPrice(p1, p2) {
   return p2.basePrice - p1.basePrice;
 }
@@ -21,4 +20,4 @@ function sortByDuration(dur1, dur2) {
   return duration2 - duration1;
 }
 
-export {sortByPrice, sortByDay, sortByDuration};
+export { sortByPrice, sortByDay, sortByDuration };

@@ -1,10 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {
-  OFFERS_OPTIONS,
-  OFFERS_TYPE,
-  DESTINATIONS_DESCRIPTIONS,
-} from '../const.js';
-import { getRandomArrayElement, getRandomInteger } from '../utils.js';
+import { OFFERS_TYPE} from '../const.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -12,7 +7,11 @@ import he from 'he';
 
 const BLANK_POINT = {
   basePrice: 0,
-  destination: '',
+  destination: {
+    description: '',
+    name: '',
+    pictures: [],
+  },
   dateFrom: '',
   dateTo: '',
   isFavorite: false,
@@ -20,24 +19,11 @@ const BLANK_POINT = {
   type: 'taxi',
 };
 
-const createEditPointTemplate = (tripPoint, destinationArr) => {
-  const {
-    basePrice, /*destination,*/
-    dateFrom,
-    dateTo,
-    type /*offers*/,
-  } = tripPoint;
-
-  const createDestinationsTemplate = (destinationArr) => {
-    let result = '';
-    for (const destination of destinationArr) {
-      result += `
-        <option value="${destination.name}"> ${destination.name}</option>
-        `;
-    }
-    return result;
-  };
-
+const createEditPointTemplate = (
+  tripPoint,
+  destinationArr,
+  typeToOffersMap
+) => {
   const createType = (currentType) =>
     OFFERS_TYPE.map(
       (pointType) =>
@@ -49,20 +35,27 @@ const createEditPointTemplate = (tripPoint, destinationArr) => {
    </div>`
     ).join('');
 
-  const typeComponent = createType(type);
+  const createDestinationsTemplate = (destinationArr) => {
+    let result = '';
+    for (const destination of destinationArr.values()) {
+      result += `
+        <option value="${destination.name}"> </option>
+        `;
+    }
+    return result;
+  };
+
   const createOfferTemplate = (offer) =>
     `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox" name="event-offer-luggage" checked>
-      <label class="event__offer-label" for="event-offer-comfort-1">
-        <span class="event__offer-title">${getRandomArrayElement(
-    OFFERS_OPTIONS
-  )}</span>
+      <label class="event__offer-label" for="${offer.id}">
+        <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
-        <span class="event__offer-price">${getRandomInteger(35, 100)}</span>
+        <span class="event__offer-price">${offer.price}</span>
       </label>
     </div>`;
 
-  const createOffersTemplate = (offers) => {
+  const createOffers = (offers) => {
     let result = '';
     for (const offer of offers) {
       result += createOfferTemplate(offer);
@@ -71,8 +64,63 @@ const createEditPointTemplate = (tripPoint, destinationArr) => {
     return result;
   };
 
-  const destinationsTemplate = createDestinationsTemplate(destinationArr);
+  function createOffersTemplate(offers) {
+    if (!offers || offers.length === 0) {
+      return '';
+    }
 
+    let result = `
+    <section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+        <div class="event__available-offers">`;
+
+    for (const offer of offers) {
+      result += createOfferTemplate(offer);
+    }
+
+    result += '</div></section>';
+    return result;
+  }
+
+  function createPhotosTemplate(photos) {
+    let result = '';
+    if (!photos) {
+      return result;
+    }
+
+    for (const photo of photos) {
+      result += `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`;
+    }
+
+    return result;
+  }
+
+  function createDestinationTemplate(destin) {
+    if (!destin) {
+      return '';
+    }
+
+    const photosTemplate = createPhotosTemplate(destin.pictures);
+
+    return `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${destin.description}</p>
+
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+            ${photosTemplate}
+        </div>
+      </div>
+    </section>`;
+  }
+
+  const destination = destinationArr.get(tripPoint.destination);
+  const offersTemplate = createOffers(
+    typeToOffersMap.get(tripPoint.type)
+  );
+  const destinationTemplate = createDestinationTemplate(destination);
+  const typeComponent = createType();
+  const destinationsTemplate = createDestinationsTemplate(destinationArr);
 
   return `
   <li class="trip-events__item">
@@ -81,7 +129,7 @@ const createEditPointTemplate = (tripPoint, destinationArr) => {
     <div class="event__type-wrapper">
       <label class="event__type  event__type-btn" for="event-type-toggle-1">
         <span class="visually-hidden">Choose event type</span>
-        <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+        <img class="event__type-icon" width="17" height="17" src="img/icons/${tripPoint.type}.png" alt="Event type icon">
       </label>
       <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -98,9 +146,7 @@ const createEditPointTemplate = (tripPoint, destinationArr) => {
         ${tripPoint.type}
       </label>
 
-       <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${
-  he.encode(tripPoint.destination)
-}" list="destination-list-1">
+       <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
             <datalist id="destination-list-1">
         ${destinationsTemplate}
       </datalist>
@@ -108,10 +154,10 @@ const createEditPointTemplate = (tripPoint, destinationArr) => {
 
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom} ">
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${tripPoint.dateFrom} ">
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo} ">
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${tripPoint.dateTo} ">
     </div>
 
     <div class="event__field-group  event__field-group--price">
@@ -119,9 +165,7 @@ const createEditPointTemplate = (tripPoint, destinationArr) => {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${
-  tripPoint.basePrice
-}">
+      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${tripPoint.basePrice}">
     </div>
 
        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -131,27 +175,20 @@ const createEditPointTemplate = (tripPoint, destinationArr) => {
           </button>
   </header>
   <section class="event__details">
-    <section class="event__section  event__section--offers">
-      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+<section class="event__section  event__section--offers">
+                    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+                    <div class="event__available-offers">
+          ${offersTemplate}
+           </div>
+                  </section>
+          ${destinationTemplate}
 
-      <div class="event__available-offers">
-          ${createOffersTemplate(OFFERS_OPTIONS)}
-      </div>
-    </section>
-
-    <section class="event__section  event__section--destination">
-      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      <p class="event__destination-description">  ${getRandomArrayElement(
-    DESTINATIONS_DESCRIPTIONS
-  )}</p>
-
-
-    </section>
   </section>
 </form>
 </li>
 `;
 };
+
 export default class EditPointView extends AbstractStatefulView {
   #tripPoint = null;
   #handleRollupClick = null;
@@ -160,10 +197,12 @@ export default class EditPointView extends AbstractStatefulView {
   #dateStartPicker = null;
   #dateEndPicker = null;
   #handleDeleteClick = null;
+  #typeToOffersMap;
 
   constructor({
     tripPoint = BLANK_POINT,
     destinationArr,
+    typeToOffersMap,
     onRollupClick,
     onFormSubmit,
     onDeleteClick,
@@ -174,11 +213,16 @@ export default class EditPointView extends AbstractStatefulView {
     this.#handleFormSubmit = onFormSubmit;
     this.#destinationArr = destinationArr;
     this.#handleDeleteClick = onDeleteClick;
+    this.#typeToOffersMap = typeToOffersMap;
     this._restoreHandlers();
   }
 
   get template() {
-    return createEditPointTemplate(this._state, this.#destinationArr);
+    return createEditPointTemplate(
+      this._state,
+      this.#destinationArr,
+      this.#typeToOffersMap
+    );
   }
 
   static parseTripToState(tripPoint) {
@@ -189,11 +233,12 @@ export default class EditPointView extends AbstractStatefulView {
     };
   }
 
-  #rollupClickHandler = (evt) => {
+  #rollupClickHandler = () => {
     this.#handleRollupClick();
   };
 
   #formSubmitHandler = (evt) => {
+    evt.preventDefault();
     this.#handleFormSubmit(EditPointView.parseTripToState(this._state));
   };
 
@@ -204,7 +249,6 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #dateEndChangeHandler = ([userDate]) => {
-
     this.updateElement({
       dateTo: userDate,
     });
@@ -223,8 +267,6 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   #setEndDatepicker() {
-    // flatpickr есть смысл инициализировать только в случае,
-    // если поле выбора даты доступно для заполнения
     this.#dateEndPicker = flatpickr(
       this.element.querySelector('input[name=event-end-time]'),
       {
@@ -261,8 +303,7 @@ export default class EditPointView extends AbstractStatefulView {
     });
   };
 
-
-  static parseStateToTrip = (state) => ({...state});
+  static parseStateToTrip = (state) => ({ ...state });
   _restoreHandlers() {
     this.element
       .querySelector('.event__rollup-btn')
@@ -283,7 +324,8 @@ export default class EditPointView extends AbstractStatefulView {
       });
     }
 
-    this.element.querySelector('input[name=event-price]')
+    this.element
+      .querySelector('input[name=event-price]')
       .addEventListener('change', this.#formPriceHandler);
 
     const destination = this.element.querySelector(
@@ -293,10 +335,11 @@ export default class EditPointView extends AbstractStatefulView {
     destination.addEventListener('change', () => {
       for (const destinat of this.#destinationArr) {
         if (destinat.name === destination.value) {
-          this.updateElement({ destination: destinat.name });
+          this.updateElement({ destination: destinat });
         }
       }
     });
+
     this.#setStartDatepicker();
     this.#setEndDatepicker();
   }

@@ -1,7 +1,7 @@
-import {remove, render, RenderPosition} from '../framework/render.js';
+import { remove, render, RenderPosition } from '../framework/render.js';
 import EditPointView from '../view/edit-point-view.js';
-import {nanoid} from 'nanoid';
-import {USERACTION, UPDATETYPE} from '../const.js';
+import { nanoid } from 'nanoid';
+import { USERACTION, UPDATETYPE } from '../const.js';
 
 export default class NewTripPresenter {
   #tripListContainer = null;
@@ -11,12 +11,11 @@ export default class NewTripPresenter {
   #destinationArr;
   #tripEditComponent = null;
 
-  constructor({tripListContainer, onDataChange, onDestroy, destinationArr}) {
+  constructor({ tripListContainer, onDataChange, onDestroy, destinationArr }) {
     this.#tripListContainer = tripListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
     this.#destinationArr = destinationArr;
-    console.log(this.#destinationArr);
   }
 
   init() {
@@ -28,10 +27,13 @@ export default class NewTripPresenter {
       onFormSubmit: this.#handleFormSubmit,
 
       onDeleteClick: this.#handleDeleteClick,
-      destinationArr: this.#destinationArr
+      destinationArr: this.#destinationArr,
     });
 
-    render(this.#tripEditComponent, this.#tripListContainer, RenderPosition.AFTERBEGIN);
+    render(
+      this.#tripEditComponent,
+      this.#tripListContainer, RenderPosition.AFTERBEGIN
+    );
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
   }
@@ -50,13 +52,11 @@ export default class NewTripPresenter {
   }
 
   #handleFormSubmit = (trip) => {
-    console.log(trip, 'TRIP');
+
     this.#handleDataChange(
       USERACTION.ADD_TRIP,
       UPDATETYPE.MINOR,
-      // Пока у нас нет сервера, который бы после сохранения
-      // выдывал честный id задачи, нам нужно позаботиться об этом самим
-      {id: nanoid(), ...trip},
+      { id: nanoid(), ...trip }
     );
     this.destroy();
   };
