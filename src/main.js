@@ -20,7 +20,6 @@ async function main() {
   const AUTHORIZATION = 'Basic hS3sfS44wcl0sa9j';
   const END_POINT = 'https://20.ecmascript.pages.academy/big-trip';
 
-
   const filterModel = new FilterModel();
 
   const tripsModel = new TripPointsModel({
@@ -28,15 +27,16 @@ async function main() {
   });
 
   const destinationModels = new DestinationsModel({
-    destinationsApiService: new DestinationsApiService(END_POINT, AUTHORIZATION),
+    destinationsApiService: new DestinationsApiService(
+      END_POINT,
+      AUTHORIZATION
+    ),
   });
-
 
   const offersModel = new OffersModel({
     offersApiService: new OffersApiService(END_POINT, AUTHORIZATION),
   });
   await offersModel.init();
-
 
   await destinationModels.init();
 
@@ -70,8 +70,6 @@ async function main() {
   filterPresenter.init();
   //boardPresenter.init();
 
-
   render(newTripButtonComponent, siteHeaderElement);
-
 }
 main();

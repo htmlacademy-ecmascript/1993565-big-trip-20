@@ -9,8 +9,13 @@ import LoadView from '../view/loading-view.js';
 import { SORT_TYPE, UPDATETYPE, USERACTION, FILTER_TYPE } from '../const.js';
 import { sortByPrice, sortByDay, sortByDuration } from '../sort-utils.js';
 import { filter } from '../utils.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
 const TRIP_COUNT_PER_STEP = 7;
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class BoardPresenter {
   #container = null;
@@ -35,6 +40,10 @@ export default class BoardPresenter {
 
   #currentSortType = SORT_TYPE.DAY;
   #filterType = FILTER_TYPE.EVERYTHING;
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT,
+  });
 
   constructor({
     container,
@@ -65,7 +74,7 @@ export default class BoardPresenter {
       onDataChange: this.#handleViewAction,
       onDestroy: onNewTripDestroy,
       destinationArr: this.#destinationArr,
-      typeToOffersMap: this.#typeToOffersMap
+      typeToOffersMap: this.#typeToOffersMap,
     });
   }
 
@@ -130,35 +139,48 @@ export default class BoardPresenter {
     render(this.#noTripComponent, this.#container);
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
-
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
     switch (actionType) {
       case USERACTION.UPDATE_TRIP:
-        this.#tripsModel.updateTrip(updateType, update);
+        this.#tripsPresenters.get(update.id).setSaving();
+        try {
+          await this.#tripsModel.updateTrip(updateType, update);
+        } catch (err) {
+          this.#tripsPresenters.get(update.id).setAborting();
+        }
         break;
       case USERACTION.ADD_TRIP:
-        this.#tripsModel.addTrip(updateType, update);
+        this.#newTripPresenter.setSaving();
+        try {
+          await this.#tripsModel.addTrip(updateType, update);
+        } catch (err) {
+          this.#newTripPresenter.setAborting();
+        }
         break;
       case USERACTION.DELETE_TRIP:
-        this.#tripsModel.deleteTrip(updateType, update);
+        this.#tripsPresenters.get(update.id).setDeleting();
+        this.#tripsPresenters.get(update.id).setDeleting();
+        try {
+          await this.#tripsModel.deleteTrip(updateType, update);
+        } catch (err) {
+          this.#tripsPresenters.get(update.id).setAborting();
+        }
         break;
     }
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
-
     switch (updateType) {
       case UPDATETYPE.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
         this.#tripsPresenters.get(data.id).init(data, this.#destinationArr);
         break;
       case UPDATETYPE.MINOR:
-        // - обновить список (например, когда задача ушла в архив)
         this.#clearList();
         this.#renderList();
         break;
       case UPDATETYPE.MAJOR:
-        // - обновить всю доску (например, при переключении фильтра)
         this.#clearList({ resetRenderedTripCount: true, resetSortType: true });
         this.#renderList();
         break;
@@ -192,9 +214,6 @@ export default class BoardPresenter {
     if (resetRenderedTripCount) {
       this.#renderedTripCount = TRIP_COUNT_PER_STEP;
     } else {
-      // На случай, если перерисовка доски вызвана
-      // уменьшением количества задач (например, удаление или перенос в архив)
-      // нужно скорректировать число показанных задач
       this.#renderedTripCount = Math.min(
         this.trips.length,
         this.#renderedTripCount
@@ -223,9 +242,7 @@ export default class BoardPresenter {
     if (this.trips.length > this.#renderedTripCount) {
       this.#renderNewEventButton();
     }
-
   }
-
 
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
@@ -241,13 +258,16 @@ export default class BoardPresenter {
 
   #renderTripPoints() {
     for (const trip of this.trips) {
-
       const tripPointsPresenter = new TripPresenter({
         tripPointsContainer: this.#tripListComponent.element,
         onDataChange: this.#handleViewAction,
         onModeChange: this.#handleModeChange,
       });
-      tripPointsPresenter.init(trip, this.#destinationArr,this.#typeToOffersMap);
+      tripPointsPresenter.init(
+        trip,
+        this.#destinationArr,
+        this.#typeToOffersMap
+      );
       this.#tripsPresenters.set(trip.id, tripPointsPresenter);
     }
   }

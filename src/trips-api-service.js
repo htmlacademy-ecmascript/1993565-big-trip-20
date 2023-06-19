@@ -22,6 +22,28 @@ export default class TripsApiService extends ApiService {
     return await ApiService.parseResponse(response);
   }
 
+  async addTrip(trip) {
+    const response = await this._load({
+      url: 'points',
+      method: Method.POST,
+      body: JSON.stringify(this.#adaptToServer(trip)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
+  }
+
+  async deleteTrip(trip) {
+    const response = await this._load({
+      url: `points/${trip.id}`,
+      method: Method.DELETE,
+    });
+
+    return response;
+  }
+
   #adaptToServer(trip) {
     const adaptedTrip = {
       ...trip,
@@ -36,7 +58,9 @@ export default class TripsApiService extends ApiService {
     delete adaptedTrip.dateTo;
     delete adaptedTrip.isFavorite;
     delete adaptedTrip.basePrice;
-
+    delete adaptedTrip.isDisabled;
+    delete adaptedTrip.isSaving;
+    delete adaptedTrip.isDeleting;
 
     return adaptedTrip;
   }

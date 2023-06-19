@@ -9,16 +9,11 @@ export default class TripPointsModel extends Observable {
     super();
     this.#tripsApiService = tripsApiService;
 
-    this.#tripsApiService.points.then((points) => {
-      console.log(points.map(this.#adaptToClient));
-
-    });
   }
 
   get destinations() {
     return this.#trips;
   }
-
 
   async init() {
     try {
@@ -30,21 +25,16 @@ export default class TripPointsModel extends Observable {
     this._notify(UPDATETYPE.INIT);
   }
 
-
   async updateTrip(updateType, update) {
-    const index = this.#trips.findIndex(
-      (trip) => trip.id === update.id
-    );
+    const index = this.#trips.findIndex((trip) => trip.id === update.id);
 
     if (index === -1) {
-      throw new Error('Can\'t update unexisting trip');
+      throw new Error('Can,t update unexisting trip');
     }
 
     try {
-
       const response = await this.#tripsApiService.updateTrip(update);
       const updatedTrip = this.#adaptToClient(response);
-
 
       this.#trips = [
         ...this.#trips.slice(0, index),
@@ -52,33 +42,40 @@ export default class TripPointsModel extends Observable {
         ...this.#trips.slice(index + 1),
       ];
 
-      this._notify(updateType, updateTrip);
+      this._notify(updateType, update);
     } catch (err) {
-      throw new Error('Can\'t update trip');
+      throw new Error('Can,t update trip');
     }
   }
 
-  addTrip(updateType, update) {
-    this.#trips = [update, ...this.#trips];
-
-    this._notify(updateType, update);
+  async addTrip(updateType, update) {
+    try {
+      const response = await this.#tripsApiService.addTrip(update);
+      const newTrip = this.#adaptToClient(response);
+      this.#trips = [newTrip, ...this.#trips];
+      this._notify(updateType, newTrip);
+    } catch (err) {
+      throw new Error('Can,t add trip');
+    }
   }
 
-  deleteTrip(updateType, update) {
-    const index = this.#trips.findIndex(
-      (trip) => trip.id === update.id
-    );
+  async deleteTrip(updateType, update) {
+    const index = this.#trips.findIndex((trip) => trip.id === update.id);
 
     if (index === -1) {
-      throw new Error('Can\'t delete unexisting trip');
+      throw new Error('Can,t delete unexisting trip');
     }
 
-    this.#trips = [
-      ...this.#trips.slice(0, index),
-      ...this.#trips.slice(index + 1),
-    ];
-
-    this._notify(updateType);
+    try {
+      await this.#tripsApiService.deleteTrip(update);
+      this.#trips = [
+        ...this.#trips.slice(0, index),
+        ...this.#trips.slice(index + 1),
+      ];
+      this._notify(updateType);
+    } catch (err) {
+      throw new Error('Can,t delete trip');
+    }
   }
 
   #adaptToClient(trip) {
