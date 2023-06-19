@@ -13,62 +13,62 @@ import OffersApiService from './offers-api-service.js';
 async function main() {
   const tripEventsElement = document.querySelector('.trip-events');
 
-  const siteHeaderElement = document.querySelector('.trip-main');
+const siteHeaderElement = document.querySelector('.trip-main');
 
-  const siteFilterElement = document.querySelector('.trip-controls');
+const siteFilterElement = document.querySelector('.trip-controls');
 
-  const AUTHORIZATION = 'Basic hS3sfS44wcl0sa9j';
-  const END_POINT = 'https://20.ecmascript.pages.academy/big-trip';
-
-
-  const filterModel = new FilterModel();
-
-  const tripsModel = new TripPointsModel({
-    tripsApiService: new TripsApiService(END_POINT, AUTHORIZATION),
-  });
-
-  const destinationModels = new DestinationsModel({
-    destinationsApiService: new DestinationsApiService(END_POINT, AUTHORIZATION),
-  });
+const AUTHORIZATION = 'Basic hS3sfS44wcl0sa9j';
+const END_POINT = 'https://20.ecmascript.pages.academy/big-trip';
 
 
-  const offersModel = new OffersModel({
-    offersApiService: new OffersApiService(END_POINT, AUTHORIZATION),
-  });
-  await offersModel.init();
+const filterModel = new FilterModel();
+
+const tripsModel = new TripPointsModel({
+  tripsApiService: new TripsApiService(END_POINT, AUTHORIZATION),
+});
+
+const destinationModels = new DestinationsModel({
+  destinationsApiService: new DestinationsApiService(END_POINT, AUTHORIZATION),
+});
 
 
-  await destinationModels.init();
+const offersModel = new OffersModel({
+  offersApiService: new OffersApiService(END_POINT, AUTHORIZATION),
+});
+await offersModel.init();
 
-  const boardPresenter = new BoardPresenter({
-    container: tripEventsElement,
-    tripsModel,
-    destinationModels,
-    filterModel,
-    offersModel,
-    onNewTripDestroy: handleNewTripFormClose,
-  });
-  await tripsModel.init();
-  const newTripButtonComponent = new NewEventButtonView({
-    onClick: handleNewTripButtonClick,
-  });
 
-  function handleNewTripFormClose() {
-    newTripButtonComponent.enabled();
-  }
-  function handleNewTripButtonClick() {
-    boardPresenter.createTrip();
-    newTripButtonComponent.disabled();
-  }
+await destinationModels.init();
 
-  const filterPresenter = new FilterPresenter({
-    filterContainer: siteFilterElement,
-    filterModel,
-    tripsModel,
-  });
+const boardPresenter = new BoardPresenter({
+  container: tripEventsElement,
+  tripsModel,
+  destinationModels,
+  filterModel,
+  offersModel,
+  onNewTripDestroy: handleNewTripFormClose,
+});
+await tripsModel.init();
+const newTripButtonComponent = new NewEventButtonView({
+  onClick: handleNewTripButtonClick,
+});
 
-  filterPresenter.init();
-  //boardPresenter.init();
+function handleNewTripFormClose() {
+  newTripButtonComponent.enabled();
+}
+function handleNewTripButtonClick() {
+  boardPresenter.createTrip();
+  newTripButtonComponent.disabled();
+}
+
+const filterPresenter = new FilterPresenter({
+  filterContainer: siteFilterElement,
+  filterModel,
+  tripsModel,
+});
+
+filterPresenter.init();
+//boardPresenter.init();
 
 
   render(newTripButtonComponent, siteHeaderElement);

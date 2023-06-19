@@ -27,7 +27,7 @@ const createPointTripTemplate = (tripPoint, destinationArr, typeToOffersMap) => 
   const date = humanizeDueDate(tripPoint.dateFrom);
   const startTime = humanizeHour(tripPoint.dateFrom);
   const endTime = humanizeHour(tripPoint.dateTo);
-  const durationTime = duration(startTime, endTime);
+  const durationTime = duration(tripPoint.dateFrom, tripPoint.dateTo);
   const humanDura = humanizeHour(durationTime);
   const destinationName = destinationArr.get(tripPoint.destination).name;
   const offers = typeToOffersMap.get(tripPoint.type);
