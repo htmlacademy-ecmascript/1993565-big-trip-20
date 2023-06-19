@@ -40,9 +40,9 @@ export default class BoardPresenter {
 
   #currentSortType = SORT_TYPE.DAY;
   #filterType = FILTER_TYPE.EVERYTHING;
-    #uiBlocker = new UiBlocker({
+  #uiBlocker = new UiBlocker({
     lowerLimit: TimeLimit.LOWER_LIMIT,
-    upperLimit: TimeLimit.UPPER_LIMIT
+    upperLimit: TimeLimit.UPPER_LIMIT,
   });
 
   constructor({
@@ -74,7 +74,7 @@ export default class BoardPresenter {
       onDataChange: this.#handleViewAction,
       onDestroy: onNewTripDestroy,
       destinationArr: this.#destinationArr,
-      typeToOffersMap: this.#typeToOffersMap
+      typeToOffersMap: this.#typeToOffersMap,
     });
   }
 
@@ -140,7 +140,7 @@ export default class BoardPresenter {
   }
 
   #handleViewAction = async (actionType, updateType, update) => {
-  this.#uiBlocker.block();
+    this.#uiBlocker.block();
     switch (actionType) {
       case USERACTION.UPDATE_TRIP:
         this.#tripsPresenters.get(update.id).setSaving();
@@ -160,7 +160,7 @@ export default class BoardPresenter {
         break;
       case USERACTION.DELETE_TRIP:
         this.#tripsPresenters.get(update.id).setDeleting();
-         this.#tripsPresenters.get(update.id).setDeleting();
+        this.#tripsPresenters.get(update.id).setDeleting();
         try {
           await this.#tripsModel.deleteTrip(updateType, update);
         } catch (err) {
@@ -172,14 +172,11 @@ export default class BoardPresenter {
   };
 
   #handleModelEvent = (updateType, data) => {
-  console.log(updateType, 'updateType!!!');
     switch (updateType) {
-
       case UPDATETYPE.PATCH:
         this.#tripsPresenters.get(data.id).init(data, this.#destinationArr);
         break;
       case UPDATETYPE.MINOR:
-
         this.#clearList();
         this.#renderList();
         break;
@@ -217,7 +214,6 @@ export default class BoardPresenter {
     if (resetRenderedTripCount) {
       this.#renderedTripCount = TRIP_COUNT_PER_STEP;
     } else {
-
       this.#renderedTripCount = Math.min(
         this.trips.length,
         this.#renderedTripCount
@@ -246,9 +242,7 @@ export default class BoardPresenter {
     if (this.trips.length > this.#renderedTripCount) {
       this.#renderNewEventButton();
     }
-
   }
-
 
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
@@ -264,13 +258,16 @@ export default class BoardPresenter {
 
   #renderTripPoints() {
     for (const trip of this.trips) {
-
       const tripPointsPresenter = new TripPresenter({
         tripPointsContainer: this.#tripListComponent.element,
         onDataChange: this.#handleViewAction,
         onModeChange: this.#handleModeChange,
       });
-      tripPointsPresenter.init(trip, this.#destinationArr,this.#typeToOffersMap);
+      tripPointsPresenter.init(
+        trip,
+        this.#destinationArr,
+        this.#typeToOffersMap
+      );
       this.#tripsPresenters.set(trip.id, tripPointsPresenter);
     }
   }

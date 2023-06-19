@@ -22,8 +22,6 @@ const OFFERS_OPTIONS = [
   'Lunch in city',
 ];
 
-
-
 const SORT_TYPE = {
   DAY: 'day',
   TIME_LONG: 'time-long',

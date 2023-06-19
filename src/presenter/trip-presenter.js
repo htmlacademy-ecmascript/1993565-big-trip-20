@@ -86,11 +86,11 @@ export default class TripPresenter {
 
   #handleFavoriteClick = () => {
     USERACTION.UPDATE_TASK,
-      UPDATETYPE.MINOR,
-      this.#handleDataChange({
-        ...this.#tripPoint,
-        isFavorite: !this.#tripPoint.isFavorite,
-      });
+    UPDATETYPE.MINOR,
+    this.#handleDataChange({
+      ...this.#tripPoint,
+      isFavorite: !this.#tripPoint.isFavorite,
+    });
   };
 
   destroy() {
@@ -99,18 +99,15 @@ export default class TripPresenter {
   }
 
   #handleFormSubmit = (tripUpdate) => {
-    console.log(tripUpdate, 'update');
-    /*const isMinorUpdate = !isDatesEqual(
-        this.#tripPoint.dateFrom,
-        update.dateFrom
-      ); */
-     !isDatesEqual(this.#tripPoint.dateFrom, tripUpdate.dateFrom)
-      || !isDatesEqual(this.#tripPoint.dateTo, tripUpdate.dateTo)
-      || this.#tripPoint.basePrice !== tripUpdate.basePrice;
+    !isDatesEqual(this.#tripPoint.dateFrom, tripUpdate.dateFrom) ||
+      !isDatesEqual(this.#tripPoint.dateTo, tripUpdate.dateTo) ||
+      this.#tripPoint.basePrice !== tripUpdate.basePrice;
 
-
-    this.#handleDataChange(USERACTION.UPDATE_TRIP, UPDATETYPE.MINOR, tripUpdate);
-
+    this.#handleDataChange(
+      USERACTION.UPDATE_TRIP,
+      UPDATETYPE.MINOR,
+      tripUpdate
+    );
   };
 
   #handleRollupClick() {
@@ -137,7 +134,7 @@ export default class TripPresenter {
     }
   }
 
-setSaving() {
+  setSaving() {
     if (this.#mode === Mode.EDITING) {
       this.#tripPointEditComponent.updateElement({
         isDisabled: true,
@@ -168,10 +165,8 @@ setSaving() {
         isDeleting: false,
       });
     };
-     this.#tripPointEditComponent.shake(resetFormState);
-   }
-
-
+    this.#tripPointEditComponent.shake(resetFormState);
+  }
 
   #replaceFormToPoint() {
     replace(this.#tripPointComponent, this.#tripPointEditComponent);
