@@ -1,4 +1,4 @@
-import ApiService from './framework/api-service.js';
+import ApiService from '../framework/api-service.js';
 
 const Method = {
   GET: 'GET',
@@ -46,12 +46,12 @@ export default class TripsApiService extends ApiService {
 
   #adaptToServer(trip) {
     const adaptedTrip = {
-      ...trip,
-      base_price: parseInt(trip.basePrice, 10),
-      date_from:
-        trip.dateFrom instanceof Date ? trip.dateFrom.toISOString() : null, // На сервере дата хранится в ISO формате
-      date_to: trip.dateTo instanceof Date ? trip.dateTo.toISOString() : null, // На сервере дата хранится в ISO формате
-      is_favorite: trip.isFavorite,
+      ...trip, // eslint-disable-next-line camelcase
+      base_price: parseInt(trip.basePrice, 10), // eslint-disable-next-line camelcase
+      date_from: // eslint-disable-next-line camelcase
+        trip.dateFrom instanceof Date ? trip.dateFrom.toISOString() : null, // eslint-disable-next-line camelcase
+      date_to: trip.dateTo instanceof Date ? trip.dateTo.toISOString() : null, // eslint-disable-next-line camelcase
+      is_favorite: trip.isFavorite, // eslint-disable-next-line camelcase
     };
 
     delete adaptedTrip.dateFrom;

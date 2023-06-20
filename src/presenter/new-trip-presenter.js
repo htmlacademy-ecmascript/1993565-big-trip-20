@@ -27,6 +27,7 @@ export default class NewTripPresenter {
     this.#tripEditComponent = new EditPointView({
       onFormSubmit: this.#handleFormSubmit,
       onDeleteClick: this.#handleDeleteClick,
+      onRollupClick: this.#handleRollupClick,
       destinationArr: this.#destinationArr,
       typeToOffersMap: this.#typeToOffersMap,
     });
@@ -52,6 +53,10 @@ export default class NewTripPresenter {
 
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
+
+  #handleRollupClick = () => {
+    this.destroy();
+  };
 
   setSaving() {
     this.#tripEditComponent.updateElement({

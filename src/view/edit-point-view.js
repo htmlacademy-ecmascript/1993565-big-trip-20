@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-
+/* eslint-disable no-shadow */
 import { OFFERS_TYPE } from '../const.js';
 
 import flatpickr from 'flatpickr';
@@ -239,7 +239,8 @@ export default class EditPointView extends AbstractStatefulView {
     };
   }
 
-  #rollupClickHandler = () => {
+  #rollupClickHandler = (evt) => {
+    evt.preventDefault();
     this.#handleRollupClick();
   };
 
