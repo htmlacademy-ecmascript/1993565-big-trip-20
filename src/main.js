@@ -6,9 +6,9 @@ import DestinationsModel from './model/destination-models.js';
 import FilterModel from './model/filter-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import OffersModel from './model/offers-model.js';
-import TripsApiService from './trips-api-service.js';
-import DestinationsApiService from './destinations-api-service.js';
-import OffersApiService from './offers-api-service.js';
+import TripsApiService from './api/trips-api-service.js';
+import DestinationsApiService from './api/destinations-api-service.js';
+import OffersApiService from './api/offers-api-service.js';
 
 async function main() {
   const tripEventsElement = document.querySelector('.trip-events');
@@ -68,7 +68,7 @@ async function main() {
   });
 
   filterPresenter.init();
-  //boardPresenter.init();
+
 
   render(newTripButtonComponent, siteHeaderElement);
 }

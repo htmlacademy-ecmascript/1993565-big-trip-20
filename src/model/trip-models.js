@@ -29,7 +29,7 @@ export default class TripPointsModel extends Observable {
     const index = this.#trips.findIndex((trip) => trip.id === update.id);
 
     if (index === -1) {
-      throw new Error('Can,t update unexisting trip');
+      throw new Error('Can\'t update unexisting trip');
     }
 
     try {
@@ -44,7 +44,7 @@ export default class TripPointsModel extends Observable {
 
       this._notify(updateType, update);
     } catch (err) {
-      throw new Error('Can,t update trip');
+      throw new Error('Can\'t update trip');
     }
   }
 
@@ -55,7 +55,7 @@ export default class TripPointsModel extends Observable {
       this.#trips = [newTrip, ...this.#trips];
       this._notify(updateType, newTrip);
     } catch (err) {
-      throw new Error('Can,t add trip');
+      throw new Error('Can\'t add trip');
     }
   }
 
@@ -63,7 +63,7 @@ export default class TripPointsModel extends Observable {
     const index = this.#trips.findIndex((trip) => trip.id === update.id);
 
     if (index === -1) {
-      throw new Error('Can,t delete unexisting trip');
+      throw new Error('Can\'t delete unexisting trip');
     }
 
     try {
@@ -74,7 +74,7 @@ export default class TripPointsModel extends Observable {
       ];
       this._notify(updateType);
     } catch (err) {
-      throw new Error('Can,t delete trip');
+      throw new Error('Can\'t delete trip');
     }
   }
 
@@ -85,7 +85,7 @@ export default class TripPointsModel extends Observable {
       dateFrom:
         trip['date_from'] !== null
           ? new Date(trip['date_from'])
-          : trip['date_from'], // На клиенте дата хранится как экземпляр Date
+          : trip['date_from'],
       dateTo:
         trip['date_to'] !== null ? new Date(trip['date_to']) : trip['date_to'],
       isFavorite: trip['is_favorite'],

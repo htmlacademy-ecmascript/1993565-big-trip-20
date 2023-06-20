@@ -1,5 +1,3 @@
-const WAYPOINT_COUNT = 5;
-
 const OFFERS_TYPE = [
   'taxi',
   'bus',
@@ -12,15 +10,6 @@ const OFFERS_TYPE = [
   'restaurant',
 ];
 
-const OFFERS_OPTIONS = [
-  'Order Uber',
-  'Add luggage',
-  'Switch to comfort',
-  'Rent a car',
-  'Add breakfast',
-  'Book tickets',
-  'Lunch in city',
-];
 
 const SORT_TYPE = {
   DAY: 'day',
@@ -48,9 +37,7 @@ const FILTER_TYPE = {
 };
 
 export {
-  WAYPOINT_COUNT,
   OFFERS_TYPE,
-  OFFERS_OPTIONS,
   SORT_TYPE,
   USERACTION,
   UPDATETYPE,

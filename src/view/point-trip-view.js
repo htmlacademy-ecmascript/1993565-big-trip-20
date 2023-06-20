@@ -4,6 +4,8 @@ import {
   humanizeDueDate,
   duration,
 } from '../utils.js';
+/* eslint-disable no-shadow */
+
 
 const createPointTripTemplate = (tripPoint, destinationArr, typeToOffersMap) => {
   function createOffersTemplate(offers) {

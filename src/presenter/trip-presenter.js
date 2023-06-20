@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import { render, replace, remove } from '../framework/render.js';
 import PointTripView from '../view/point-trip-view.js';
 import EditPointView from '../view/edit-point-view.js';
@@ -52,7 +53,7 @@ export default class TripPresenter {
       tripPoint,
       destinationArr,
       typeToOffersMap,
-      onRollupClick: this.#handleRollupClick(),
+      onRollupClick: this.#handleRollupClick,
       onFormSubmit: this.#handleFormSubmit,
       onDeleteClick: this.#handleDeleteClick,
     });
@@ -84,14 +85,16 @@ export default class TripPresenter {
     remove(prevTripPointEditComponent);
   }
 
-  #handleFavoriteClick = () => {
-    USERACTION.UPDATE_TASK,
-    UPDATETYPE.MINOR,
-    this.#handleDataChange({
-      ...this.#tripPoint,
-      isFavorite: !this.#tripPoint.isFavorite,
-    });
-  };
+  #handleFavoriteClick() {
+    return () => {
+      USERACTION.UPDATE_TRIP,
+      UPDATETYPE.MINOR,
+      this.#handleDataChange({
+        ...this.#tripPoint,
+        isFavorite: !this.#tripPoint.isFavorite,
+      });
+    };
+  }
 
   destroy() {
     remove(this.#tripPointComponent);
@@ -110,12 +113,10 @@ export default class TripPresenter {
     );
   };
 
-  #handleRollupClick() {
-    return () => {
-      this.#replaceFormToPoint();
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
-    };
-  }
+  #handleRollupClick = () => {
+    this.#replaceFormToPoint();
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+  };
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
