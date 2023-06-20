@@ -12,11 +12,9 @@ const isDatesEqual = (dateA, dateB) =>
 const duration = (dateFrom, dateTo) => dayjs(dateTo).diff(dayjs(dateFrom));
 
 const isInThePast = (date) => date && dayjs().isAfter(date, 'D');
-
+const isInFuture = (date) => date && dayjs().isBefore(date, 'D');
 const isCurrentDate = (dateFrom, dateTo) =>
   dateFrom && dateTo && !isInThePast(dateTo) && !isInFuture(dateFrom);
-
-const isInFuture = (date) => date && dayjs().isBefore(date, 'D');
 
 const filter = {
   [FILTER_TYPE.EVERYTHING]: (tripPoints) => tripPoints,

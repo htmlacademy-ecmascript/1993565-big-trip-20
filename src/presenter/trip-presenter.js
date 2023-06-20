@@ -114,12 +114,9 @@ export default class TripPresenter {
   };
 
   #handleRollupClick = () => {
-   console.log(this.#handleRollupClick);
-    return () => {
-      this.#replaceFormToPoint();
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
-    };
-  }
+    this.#replaceFormToPoint();
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+  };
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
