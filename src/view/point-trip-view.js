@@ -6,24 +6,24 @@ import {
 
 } from '../utils.js';
 /* eslint-disable no-shadow */
-  const createOffersTemplate = (offers) => {
-    let result = '';
-    if (!offers) {
-      return result;
-    }
+const createOffersTemplate = (offers) => {
+  let result = '';
+  if (!offers) {
+    return result;
+  }
 
-    for (const offer of offers) {
-      result += (
-        `<li class="event__offer">
+  for (const offer of offers) {
+    result += (
+      `<li class="event__offer">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${offer.price}</span>
       </li>`
-      );
-    }
-
-    return result;
+    );
   }
+
+  return result;
+};
 
 
 const createPointTripTemplate = (tripPoint, destinationArr, typeToOffersMap) => {

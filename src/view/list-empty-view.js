@@ -13,7 +13,7 @@ const createEmptyListTemplate = (filterType) => {
   return `<p class="trip-events__msg">
       ${text}
     </p>`;
-}
+};
 
 export default class NewEmptyListView extends AbstractView {
   #filterType;
