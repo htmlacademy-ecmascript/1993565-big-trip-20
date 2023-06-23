@@ -1,4 +1,5 @@
-import { UPDATETYPE } from '../const.js';
+import { UpdateType
+ } from '../const.js';
 import Observable from '../framework/observable.js';
 
 export default class TripPointsModel extends Observable {
@@ -22,7 +23,7 @@ export default class TripPointsModel extends Observable {
     } catch (err) {
       this.#trips = [];
     }
-    this._notify(UPDATETYPE.INIT);
+    this._notify(UpdateType.INIT);
   }
 
   async updateTrip(updateType, update) {
@@ -91,7 +92,6 @@ export default class TripPointsModel extends Observable {
       isFavorite: trip['is_favorite'],
     };
 
-    // Ненужные ключи мы удаляем
     delete adaptedTrip['base_price'];
     delete adaptedTrip['date_from'];
     delete adaptedTrip['date_to'];

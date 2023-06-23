@@ -10,26 +10,25 @@ const OFFERS_TYPE = [
   'restaurant',
 ];
 
-
-const SORT_TYPE = {
+const SortType = {
   DAY: 'day',
   TIME_LONG: 'time-long',
   PRICE_UP: 'price-up',
 };
 
-const USERACTION = {
+const UserAction = {
   UPDATE_TRIP: 'UPDATE_TRIP',
   ADD_TRIP: 'ADD_TRIP',
   DELETE_TRIP: 'DELETE_TRIP',
 };
 
-const UPDATETYPE = {
+const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   INIT: 'INIT',
 };
-const FILTER_TYPE = {
+const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
   PRESENT: 'present',
@@ -38,8 +37,8 @@ const FILTER_TYPE = {
 
 export {
   OFFERS_TYPE,
-  SORT_TYPE,
-  USERACTION,
-  UPDATETYPE,
-  FILTER_TYPE,
+  SortType,
+  UserAction,
+  UpdateType,
+  FilterType,
 };

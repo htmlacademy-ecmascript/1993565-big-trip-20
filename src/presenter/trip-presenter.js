@@ -2,8 +2,7 @@
 import { render, replace, remove } from '../framework/render.js';
 import PointTripView from '../view/point-trip-view.js';
 import EditPointView from '../view/edit-point-view.js';
-import { USERACTION, UPDATETYPE } from '../const.js';
-import { isDatesEqual } from '../utils.js';
+import { UserAction, UpdateType } from '../const.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -87,8 +86,8 @@ export default class TripPresenter {
 
   #handleFavoriteClick() {
     return () => {
-      USERACTION.UPDATE_TRIP,
-      UPDATETYPE.MINOR,
+      UserAction.UPDATE_TRIP,
+      UpdateType.MINOR,
       this.#handleDataChange({
         ...this.#tripPoint,
         isFavorite: !this.#tripPoint.isFavorite,
@@ -102,13 +101,9 @@ export default class TripPresenter {
   }
 
   #handleFormSubmit = (tripUpdate) => {
-    !isDatesEqual(this.#tripPoint.dateFrom, tripUpdate.dateFrom) ||
-      !isDatesEqual(this.#tripPoint.dateTo, tripUpdate.dateTo) ||
-      this.#tripPoint.basePrice !== tripUpdate.basePrice;
-
     this.#handleDataChange(
-      USERACTION.UPDATE_TRIP,
-      UPDATETYPE.MINOR,
+      UserAction.UPDATE_TRIP,
+      UpdateType.MINOR,
       tripUpdate
     );
   };
@@ -126,7 +121,7 @@ export default class TripPresenter {
   };
 
   #handleDeleteClick = (trip) => {
-    this.#handleDataChange(USERACTION.DELETE_TRIP, UPDATETYPE.MINOR, trip);
+    this.#handleDataChange(UserAction.DELETE_TRIP, UpdateType.MINOR, trip);
   };
 
   resetView() {

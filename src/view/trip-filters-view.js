@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
-function createFiltersTemplate(filters, currentFilterType) {
+const createFiltersTemplate = (filters, currentFilterType) => {
   let result = '<form class="trip-filters" action="#" method="get">';
   for (const filter of filters) {
     result += `<div class="trip-filters__filter">
