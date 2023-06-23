@@ -1,39 +1,42 @@
 import dayjs from 'dayjs';
-import { FILTER_TYPE } from './const.js';
+import { FilterType } from './const.js';
 
-const humanizeDueDate = (dueDate) =>
-  dueDate ? dayjs(dueDate).format('MMM DD') : '';
+const humanizeDueDate = (dueDate) => dueDate ? dayjs(dueDate).format('MMM DD') : '';
 
-const humanizeHour = (hour) => (hour ? dayjs(hour).format('HH:MM') : '');
+const humanizeHour = (hour) => hour ? dayjs(hour).format('HH:MM') : '';
 
-const isDatesEqual = (dateA, dateB) =>
-  (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+const humanizeDateTime = (dateTime) => dateTime ? dayjs(dateTime).format('DD/MM/YY HH:mm') : '';
 
-const duration = (dateFrom, dateTo) => dayjs(dateTo).diff(dayjs(dateFrom));
+const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 
-const isInThePast = (date) => date && dayjs().isAfter(date, 'D');
-const isInFuture = (date) => date && dayjs().isBefore(date, 'D');
-const isCurrentDate = (dateFrom, dateTo) =>
-  dateFrom && dateTo && !isInThePast(dateTo) && !isInFuture(dateFrom);
+const durationCalculation = (dateFrom, dateTo) => dayjs(dateTo).diff(dayjs(dateFrom));
 
-const filter = {
-  [FILTER_TYPE.EVERYTHING]: (tripPoints) => tripPoints,
-  [FILTER_TYPE.PAST]: (tripPoints) =>
-    tripPoints.filter((tripPoint) => isInThePast(tripPoint.dateTo)),
-  [FILTER_TYPE.PRESENT]: (tripPoints) =>
+const checkIsInThePast = (date) => date && dayjs().isAfter(date, 'D');
+
+const checkIsInFuture = (date) => date && dayjs().isBefore(date, 'D');
+
+const checkIsCurrentDate = (dateFrom, dateTo) => dateFrom && dateTo && !checkIsInThePast(dateTo) && !checkIsInFuture(dateFrom);
+
+const FILTER = {
+  [FilterType.EVERYTHING]: (tripPoints) => tripPoints,
+  [FilterType.PAST]: (tripPoints) =>
+    tripPoints.filter((tripPoint) => checkIsInThePast(tripPoint.dateTo)),
+  [FilterType.PRESENT]: (tripPoints) =>
     tripPoints.filter((tripPoint) =>
-      isCurrentDate(tripPoint.dateFrom, tripPoint.dateTo)
+      checkIsCurrentDate(tripPoint.dateFrom, tripPoint.dateTo)
     ),
-  [FILTER_TYPE.FUTURE]: (tripPoints) =>
-    tripPoints.filter((tripPoint) => isInFuture(tripPoint.dateFrom)),
+  [FilterType.FUTURE]: (tripPoints) =>
+    tripPoints.filter((tripPoint) => checkIsInFuture(tripPoint.dateFrom)),
 };
 
 const humanizeDate = (date) => dayjs(date).format('DD MMM');
+
 export {
   humanizeHour,
   humanizeDate,
+  humanizeDateTime,
   humanizeDueDate,
-  duration,
+  durationCalculation,
   isDatesEqual,
-  filter,
+  FILTER,
 };

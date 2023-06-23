@@ -1,7 +1,7 @@
 import { render, replace, remove } from '../framework/render.js';
 import FiltersView from '../view/trip-filters-view.js';
-import { filter } from '../utils.js';
-import { FILTER_TYPE, UPDATETYPE } from '../const.js';
+import { FILTER } from '../utils.js';
+import { FilterType, UpdateType } from '../const.js';
 
 export default class FilterPresenter {
   #filterContainer = null;
@@ -22,9 +22,9 @@ export default class FilterPresenter {
   get filters() {
     const trips = this.#tripsModel.destinations;
 
-    return Object.values(FILTER_TYPE).map((type) => ({
+    return Object.values(FilterType).map((type) => ({
       type,
-      count: filter[type](trips).length,
+      count: FILTER[type](trips).length,
     }));
   }
 
@@ -53,6 +53,6 @@ export default class FilterPresenter {
       return;
     }
 
-    this.#filterModel.setFilter(UPDATETYPE.MAJOR, filterType);
+    this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
   };
 }

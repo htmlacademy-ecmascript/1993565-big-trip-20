@@ -1,14 +1,13 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { SORT_TYPE } from '../const.js';
+import { SortType } from '../const.js';
 
-function createSortTemplate(currentSortType) {
-  return ` <form class="trip-events__trip-sort  trip-sort" action="#" method="get">
+const createSortTemplate = (currentSortType) => ` <form class="trip-events__trip-sort  trip-sort" action="#" method="get">
     <div class="trip-sort__item  trip-sort__item--day">
               <input id="sort-day" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-day" ${
-  currentSortType === SORT_TYPE.DAY ? 'checked' : ''
+  currentSortType === SortType.DAY ? 'checked' : ''
 }>
               <label class="trip-sort__btn" for="sort-day" data-sort-type="${
-  SORT_TYPE.DAY
+  SortType.DAY
 }">Day</label>
             </div>
 
@@ -19,19 +18,19 @@ function createSortTemplate(currentSortType) {
 
             <div class="trip-sort__item  trip-sort__item--time">
               <input id="sort-time" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-time" ${
-  currentSortType === SORT_TYPE.TIME_LONG ? 'checked' : ''
+  currentSortType === SortType.TIME_LONG ? 'checked' : ''
 }>
               <label class="trip-sort__btn" for="sort-time"  data-sort-type="${
-  SORT_TYPE.TIME_LONG
+  SortType.TIME_LONG
 }">Time</label>
             </div>
 
             <div class="trip-sort__item  trip-sort__item--price">
               <input id="sort-price" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-price" ${
-  currentSortType === SORT_TYPE.PRICE_UP ? 'checked' : ''
+  currentSortType === SortType.PRICE_UP ? 'checked' : ''
 }>
               <label class="trip-sort__btn" for="sort-price" data-sort-type="${
-  SORT_TYPE.PRICE_UP
+  SortType.PRICE_UP
 }">Price</label>
             </div>
 
@@ -40,7 +39,6 @@ function createSortTemplate(currentSortType) {
               <label class="trip-sort__btn" for="sort-offer">Offers</label>
             </div>
             </form>`;
-}
 
 export default class SortView extends AbstractView {
   #currentSortType = null;

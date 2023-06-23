@@ -6,9 +6,9 @@ import NewEventButtonView from '../view/new-event-button-view.js';
 import NewTripPresenter from './new-trip-presenter.js';
 import TripPresenter from './trip-presenter.js';
 import LoadView from '../view/loading-view.js';
-import { SORT_TYPE, UPDATETYPE, USERACTION, FILTER_TYPE } from '../const.js';
+import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
 import { sortByPrice, sortByDay, sortByDuration } from '../sort-utils.js';
-import { filter } from '../utils.js';
+import { FILTER } from '../utils.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
 const TRIP_COUNT_PER_STEP = 7;
@@ -38,8 +38,8 @@ export default class BoardPresenter {
   #typeToOffersMap = new Map();
   #offersModel;
 
-  #currentSortType = SORT_TYPE.DAY;
-  #filterType = FILTER_TYPE.EVERYTHING;
+  #currentSortType = SortType.DAY;
+  #filterType = FilterType.EVERYTHING;
   #uiBlocker = new UiBlocker({
     lowerLimit: TimeLimit.LOWER_LIMIT,
     upperLimit: TimeLimit.UPPER_LIMIT,
@@ -81,14 +81,14 @@ export default class BoardPresenter {
   get trips() {
     this.#filterType = this.#filterModel.filter;
     const trips = this.#tripsModel.destinations;
-    const filteredTrips = filter[this.#filterType](trips);
+    const filteredTrips = FILTER[this.#filterType](trips);
 
     switch (this.#currentSortType) {
-      case SORT_TYPE.DAY:
+      case SortType.DAY:
         return filteredTrips.sort(sortByDay);
-      case SORT_TYPE.TIME_LONG:
+      case SortType.TIME_LONG:
         return filteredTrips.sort(sortByDuration);
-      case SORT_TYPE.PRICE_UP:
+      case SortType.PRICE_UP:
         return filteredTrips.sort(sortByPrice);
     }
     return filteredTrips;
@@ -99,16 +99,11 @@ export default class BoardPresenter {
   }
 
   createTrip() {
-    this.#currentSortType = SORT_TYPE.DAY;
-    this.#filterModel.setFilter(UPDATETYPE.MAJOR, FILTER_TYPE.EVERYTHING);
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newTripPresenter.init();
   }
 
-  #renderNewEventButton() {
-    this.#newEventButtonComponent = new NewEventButtonView({
-      onClick: this.#handleNewEventButtonClick,
-    });
-  }
 
   #handleNewEventButtonClick = () => {
     const tripCount = this.trips.length;
@@ -127,6 +122,13 @@ export default class BoardPresenter {
     }
   };
 
+
+  #renderNewEventButton() {
+    this.#newEventButtonComponent = new NewEventButtonView({
+      onClick: this.#handleNewEventButtonClick,
+    });
+  }
+
   #renderTrips(trips) {
     trips.forEach((trip) => this.#renderTripPoints(trip));
   }
@@ -142,7 +144,8 @@ export default class BoardPresenter {
   #handleViewAction = async (actionType, updateType, update) => {
     this.#uiBlocker.block();
     switch (actionType) {
-      case USERACTION.UPDATE_TRIP:
+
+      case UserAction.UPDATE_TRIP:
         this.#tripsPresenters.get(update.id).setSaving();
         try {
           await this.#tripsModel.updateTrip(updateType, update);
@@ -150,7 +153,7 @@ export default class BoardPresenter {
           this.#tripsPresenters.get(update.id).setAborting();
         }
         break;
-      case USERACTION.ADD_TRIP:
+      case UserAction.ADD_TRIP:
         this.#newTripPresenter.setSaving();
         try {
           await this.#tripsModel.addTrip(updateType, update);
@@ -158,7 +161,7 @@ export default class BoardPresenter {
           this.#newTripPresenter.setAborting();
         }
         break;
-      case USERACTION.DELETE_TRIP:
+      case UserAction.DELETE_TRIP:
         this.#tripsPresenters.get(update.id).setDeleting();
         this.#tripsPresenters.get(update.id).setDeleting();
         try {
@@ -173,18 +176,18 @@ export default class BoardPresenter {
 
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
-      case UPDATETYPE.PATCH:
+      case UpdateType.PATCH:
         this.#tripsPresenters.get(data.id).init(data, this.#destinationArr);
         break;
-      case UPDATETYPE.MINOR:
+      case UpdateType.MINOR:
         this.#clearList();
         this.#renderList();
         break;
-      case UPDATETYPE.MAJOR:
+      case UpdateType.MAJOR:
         this.#clearList({ resetRenderedTripCount: true, resetSortType: true });
         this.#renderList();
         break;
-      case UPDATETYPE.INIT:
+      case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
         for (const offerByType of this.#offersModel.offers) {
@@ -221,7 +224,7 @@ export default class BoardPresenter {
     }
 
     if (resetSortType) {
-      this.#currentSortType = SORT_TYPE.DAY;
+      this.#currentSortType = SortType.DAY;
     }
   }
 

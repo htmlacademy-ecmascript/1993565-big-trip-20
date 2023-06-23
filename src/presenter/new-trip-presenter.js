@@ -1,6 +1,6 @@
 import { remove, render, RenderPosition } from '../framework/render.js';
 import EditPointView from '../view/edit-point-view.js';
-import { USERACTION, UPDATETYPE } from '../const.js';
+import { UserAction, UpdateType } from '../const.js';
 
 export default class NewTripPresenter {
   #tripListContainer = null;
@@ -20,14 +20,14 @@ export default class NewTripPresenter {
   }
 
   init() {
-    if (this.#tripEditComponent !== null) {
+    if (this.#tripEditComponent) {
       return;
     }
 
     this.#tripEditComponent = new EditPointView({
       onFormSubmit: this.#handleFormSubmit,
       onDeleteClick: this.#handleDeleteClick,
-      onRollupClick: this.#handleRollupClick,
+      onRollupClick: this.#handleDeleteClick,
       destinationArr: this.#destinationArr,
       typeToOffersMap: this.#typeToOffersMap,
     });
@@ -54,10 +54,6 @@ export default class NewTripPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
-  #handleRollupClick = () => {
-    this.destroy();
-  };
-
   setSaving() {
     this.#tripEditComponent.updateElement({
       isDisabled: true,
@@ -77,7 +73,7 @@ export default class NewTripPresenter {
   }
 
   #handleFormSubmit = (trip) => {
-    this.#handleDataChange(USERACTION.ADD_TRIP, UPDATETYPE.MINOR, trip);
+    this.#handleDataChange(UserAction.ADD_TRIP, UpdateType.MINOR, trip);
   };
 
   #handleDeleteClick = () => {

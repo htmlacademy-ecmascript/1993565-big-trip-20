@@ -10,15 +10,14 @@ import TripsApiService from './api/trips-api-service.js';
 import DestinationsApiService from './api/destinations-api-service.js';
 import OffersApiService from './api/offers-api-service.js';
 
+const AUTHORIZATION = 'Basic hS3sfS44wcl0sa9j';
+const END_POINT = 'https://20.ecmascript.pages.academy/big-trip';
+const tripEventsElement = document.querySelector('.trip-events');
+const siteHeaderElement = document.querySelector('.trip-main');
+const siteFilterElement = document.querySelector('.trip-controls');
+
+
 async function main() {
-  const tripEventsElement = document.querySelector('.trip-events');
-
-  const siteHeaderElement = document.querySelector('.trip-main');
-
-  const siteFilterElement = document.querySelector('.trip-controls');
-
-  const AUTHORIZATION = 'Basic hS3sfS44wcl0sa9j';
-  const END_POINT = 'https://20.ecmascript.pages.academy/big-trip';
 
   const filterModel = new FilterModel();
 
@@ -69,7 +68,7 @@ async function main() {
 
   filterPresenter.init();
 
-
   render(newTripButtonComponent, siteHeaderElement);
 }
+
 main();

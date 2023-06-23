@@ -2,34 +2,36 @@ import AbstractView from '../framework/view/abstract-view.js';
 import {
   humanizeHour,
   humanizeDueDate,
-  duration,
+  durationCalculation,
+
 } from '../utils.js';
 /* eslint-disable no-shadow */
+const createOffersTemplate = (offers) => {
+  let result = '';
+  if (!offers) {
+    return result;
+  }
 
-
-const createPointTripTemplate = (tripPoint, destinationArr, typeToOffersMap) => {
-  function createOffersTemplate(offers) {
-    let result = '';
-    if (!offers) {
-      return result;
-    }
-
-    for (const offer of offers) {
-      result += (
-        `<li class="event__offer">
+  for (const offer of offers) {
+    result += (
+      `<li class="event__offer">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${offer.price}</span>
       </li>`
-      );
-    }
-
-    return result;
+    );
   }
+
+  return result;
+};
+
+
+const createPointTripTemplate = (tripPoint, destinationArr, typeToOffersMap) => {
+
   const date = humanizeDueDate(tripPoint.dateFrom);
   const startTime = humanizeHour(tripPoint.dateFrom);
   const endTime = humanizeHour(tripPoint.dateTo);
-  const durationTime = duration(tripPoint.dateFrom, tripPoint.dateTo);
+  const durationTime = durationCalculation(tripPoint.dateFrom, tripPoint.dateTo);
   const humanDura = humanizeHour(durationTime);
   const destinationName = destinationArr.get(tripPoint.destination).name;
   const offers = typeToOffersMap.get(tripPoint.type);

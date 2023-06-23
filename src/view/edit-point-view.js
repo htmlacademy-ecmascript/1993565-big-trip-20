@@ -1,7 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 /* eslint-disable no-shadow */
 import { OFFERS_TYPE } from '../const.js';
-
+import {humanizeDateTime} from '../utils.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -17,37 +17,61 @@ const BLANK_POINT = {
   type: 'taxi',
 };
 
-const createEditPointTemplate = (
-  tripPoint,
-  destinationArr,
-  typeToOffersMap
-) => {
-  const isDisabled = tripPoint.isDisabled;
-  const isSaving = tripPoint.isSaving;
-  const isDeleting = tripPoint.isDeleting;
-  const delet = isDeleting ? 'Deleting...' : 'Delete';
 
-  const createType = (currentType) =>
-    OFFERS_TYPE.map(
-      (pointType) =>
-        `<div class="event__type-item">
+const createPhotosTemplate = (photos) => {
+  let result = '';
+  if (!photos) {
+    return result;
+  }
+
+  for (const photo of photos) {
+    result += `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`;
+  }
+
+  return result;
+};
+
+const createDestinationTemplate = (destin) => {
+  if (!destin) {
+    return '';
+  }
+
+  const photosTemplate = createPhotosTemplate(destin.pictures);
+
+  return `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${destin.description}</p>
+
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+            ${photosTemplate}
+        </div>
+      </div>
+    </section>`;
+};
+
+
+const createType = (currentType) =>
+  OFFERS_TYPE.map(
+    (pointType) =>
+      `<div class="event__type-item">
    <input id="event-type-${pointType}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}" ${
   currentType === 'checked'
 }>
    <label class="event__type-label  event__type-label--${pointType}" for="event-type-${pointType}">${pointType}</label>
    </div>`
-    ).join('');
+  ).join('');
 
-  const createDestinationsTemplate = (destinationArr) => {
-    let result = '';
-    for (const destination of destinationArr.values()) {
-      result += `<option value="${destination.name}"></option>`;
-    }
-    return result;
-  };
+const createDestinationsTemplate = (destinationArr) => {
+  let result = '';
+  for (const destination of destinationArr.values()) {
+    result += `<option value="${destination.name}"></option>`;
+  }
+  return result;
+};
 
-  const createOfferTemplate = (offer, isDisabled, checked) =>
-    `<div class="event__offer-selector">
+const createOfferTemplate = (offer, isDisabled, checked) =>
+  `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="event-offer-luggage" ${
   isDisabled ? 'disabled' : ''
 }   ${checked ? 'checked' : ''}>
@@ -58,54 +82,34 @@ const createEditPointTemplate = (
       </label>
     </div>`;
 
-  const createOffers = (offers, isDisabled) => {
-    let result = '';
-    for (const offer of offers) {
-      const checked = tripPoint.offers.includes(offer.id);
-      result += createOfferTemplate(offer, isDisabled, checked);
-    }
+const createOffers = (offers, isDisabled, tripPoint) => {
+  let result = '';
 
-    return result;
-  };
-
-  function createPhotosTemplate(photos) {
-    let result = '';
-    if (!photos) {
-      return result;
-    }
-
-    for (const photo of photos) {
-      result += `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`;
-    }
-
-    return result;
+  for (const offer of offers) {
+    const checked = tripPoint.offers.includes(offer.id);
+    result += createOfferTemplate(offer, isDisabled, checked);
   }
 
-  function createDestinationTemplate(destin) {
-    if (!destin) {
-      return '';
-    }
+  return result;
+};
 
-    const photosTemplate = createPhotosTemplate(destin.pictures);
-
-    return `<section class="event__section  event__section--destination">
-      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      <p class="event__destination-description">${destin.description}</p>
-
-      <div class="event__photos-container">
-        <div class="event__photos-tape">
-            ${photosTemplate}
-        </div>
-      </div>
-    </section>`;
-  }
-
-  const offesMapToArr = typeToOffersMap.get(tripPoint.type);
+const createEditPointTemplate = (
+  tripPoint,
+  destinationArr,
+  typeToOffersMap
+) => {
+  const offersMapToArr = typeToOffersMap.get(tripPoint.type);
   const destination = destinationArr.get(tripPoint.destination);
-  const offersTemplate = createOffers(offesMapToArr);
+  const dateTo = humanizeDateTime(tripPoint.dateTo);
+  const dateFrom = humanizeDateTime(tripPoint.dateFrom);
+  const isDisabled = tripPoint.isDisabled;
+  const isSaving = tripPoint.isSaving;
+  const isDeleting = tripPoint.isDeleting;
+  const delet = isDeleting ? 'Deleting...' : 'Delete';
   const destinationTemplate = createDestinationTemplate(destination);
   const typeComponent = createType();
   const destinationsTemplate = createDestinationsTemplate(destinationArr);
+  const offersTemplate = createOffers(offersMapToArr, isDisabled, tripPoint);
 
   return `
   <li class="trip-events__item">
@@ -146,12 +150,12 @@ const createEditPointTemplate = (
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
       <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${
-  tripPoint.dateFrom
+  dateFrom
 }" ${isDisabled ? 'disabled' : ''}>
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">To</label>
       <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${
-  tripPoint.dateTo
+  dateTo
 }" ${isDisabled ? 'disabled' : ''}>
     </div>
 
@@ -165,9 +169,9 @@ const createEditPointTemplate = (
 }" ${isDisabled ? 'disabled' : ''}>
     </div>
 
-       <button class="event__save-btn  btn  btn--blue" type="submit" ${
+       <button class="event__save-btn  btn  btn--blue" type="submit"  ${!tripPoint.dateFrom ? 'disabled' : ''} ${!tripPoint.dateTo ? 'disabled' : ''} ${
   isDisabled ? 'disabled' : ''
-}>${isSaving ? 'Saving...' : 'Save'}</button>
+}>${isSaving ? 'Saving...' : 'Save'} </button>
           <button class="event__reset-btn" type="reset" ${
   isDisabled ? 'disabled' : ''
 }>${delet}</button>
@@ -249,15 +253,15 @@ export default class EditPointView extends AbstractStatefulView {
     this.#handleFormSubmit(EditPointView.parseTripToState(this._state));
   };
 
-  #startTimeChangeHandler = ([userDate]) => {
+  #startTimeChangeHandler = ([startDate]) => {
     this.updateElement({
-      dateFrom: userDate,
+      dateFrom: startDate,
     });
   };
 
-  #dateEndChangeHandler = ([userDate]) => {
+  #dateEndChangeHandler = ([endDate]) => {
     this.updateElement({
-      dateTo: userDate,
+      dateTo: endDate,
     });
   };
 
@@ -265,7 +269,7 @@ export default class EditPointView extends AbstractStatefulView {
     this.#dateStartPicker = flatpickr(
       this.element.querySelector('input[name=event-start-time]'),
       {
-        dateFormat: 'j/m/y H:i',
+        dateFormat: 'd/m/y H:i',
         enableTime: true,
         defaultDate: this._state.dateStart,
         onChange: this.#startTimeChangeHandler,
@@ -277,7 +281,7 @@ export default class EditPointView extends AbstractStatefulView {
     this.#dateEndPicker = flatpickr(
       this.element.querySelector('input[name=event-end-time]'),
       {
-        dateFormat: 'j/m/y H:i',
+        dateFormat: 'd/m/y H:i',
         enableTime: true,
         defaultDate: this._state.dateEnd,
         onChange: this.#dateEndChangeHandler,
