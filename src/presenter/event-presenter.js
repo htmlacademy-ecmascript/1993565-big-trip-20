@@ -94,10 +94,6 @@ export default class BoardPresenter {
     return filteredTrips;
   }
 
-  init() {
-    this.#renderList();
-  }
-
   createTrip() {
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
@@ -162,7 +158,6 @@ export default class BoardPresenter {
         }
         break;
       case UserAction.DELETE_TRIP:
-        this.#tripsPresenters.get(update.id).setDeleting();
         this.#tripsPresenters.get(update.id).setDeleting();
         try {
           await this.#tripsModel.deleteTrip(updateType, update);

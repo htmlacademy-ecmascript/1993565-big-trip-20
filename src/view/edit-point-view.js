@@ -38,23 +38,23 @@ const createDestinationTemplate = (destin) => {
   const photosTemplate = createPhotosTemplate(destin.pictures);
 
   return `<section class="event__section  event__section--destination">
-      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      <p class="event__destination-description">${destin.description}</p>
-      <div class="event__photos-container">
-        <div class="event__photos-tape">
-            ${photosTemplate}
-        </div>
-      </div>
-    </section>`;
+            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+            <p class="event__destination-description">${destin.description}</p>
+            <div class="event__photos-container">
+              <div class="event__photos-tape">
+              ${photosTemplate}
+              </div>
+            </div>
+          </section>`;
 };
 
 const createType = () =>
   OFFERS_TYPE.map(
     (pointType) =>
       `<div class="event__type-item">
-   <input id="event-type-${pointType}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}">
-   <label class="event__type-label  event__type-label--${pointType}" for="event-type-${pointType}">${pointType}</label>
-   </div>`
+         <input id="event-type-${pointType}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}">
+         <label class="event__type-label  event__type-label--${pointType}" for="event-type-${pointType}">${pointType}</label>
+       </div>`
   ).join('');
 
 const createDestinationsTemplate = (destinationArr) => {
@@ -66,7 +66,7 @@ const createDestinationsTemplate = (destinationArr) => {
 };
 
 const createOfferTemplate = (offer, isDisabled, checked) =>
-  `<div class="event__offer-selector">
+   `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="event-offer-luggage" ${isDisabled ? 'disabled' : ''}   ${checked ? 'checked' : ''}>
       <label class="event__offer-label" for="${offer.id}">
         <span class="event__offer-title">${offer.title}</span>
@@ -170,7 +170,6 @@ const createEditPointTemplate = (
 };
 
 export default class EditPointView extends AbstractStatefulView {
-  #tripPoint = null;
   #handleRollupClick = null;
   #handleFormSubmit = null;
   #destinationArr;

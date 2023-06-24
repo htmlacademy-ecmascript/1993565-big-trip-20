@@ -76,7 +76,7 @@ const createPointTripTemplate = (tripPoint, destinationArr, typeToOffersMap) => 
                   <span class="visually-hidden">Open event</span>
                 </button>
               </div>
-            </li>`;
+          </li>`;
 };
 export default class PointTripView extends AbstractView {
   #tripPoint = null;
