@@ -66,14 +66,14 @@ const createDestinationsTemplate = (destinationArr) => {
 };
 
 const createOfferTemplate = (offer, isDisabled, checked) =>
-   `<div class="event__offer-selector">
+  `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox" name="event-offer-luggage" ${isDisabled ? 'disabled' : ''}   ${checked ? 'checked' : ''}>
       <label class="event__offer-label" for="${offer.id}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${offer.price}</span>
       </label>
-    </div>`;
+  </div>`;
 
 const createOffers = (offers, isDisabled, tripPoint) => {
   let result = '';

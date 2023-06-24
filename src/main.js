@@ -17,8 +17,6 @@ const END_POINT = 'https://20.ecmascript.pages.academy/big-trip';
 const pageHeaderElement = document.querySelector('.page-header');
 const tripEventsElement = document.querySelector('.trip-events');
 const siteHeaderElement = pageHeaderElement.querySelector('.trip-main');
-const siteFilterElement = pageHeaderElement.querySelector('.trip-controls__filters');
-
 
 async function main() {
 
@@ -72,7 +70,7 @@ async function main() {
 
   render(new TripInfoView(), siteHeaderElement);
   filterPresenter.init();
-   render(newTripButtonComponent, siteHeaderElement);
+  render(newTripButtonComponent, siteHeaderElement);
 }
 
 main();
