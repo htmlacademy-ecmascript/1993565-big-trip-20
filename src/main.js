@@ -14,9 +14,8 @@ import TripInfoView from './view/trip-inf-view.js';
 const AUTHORIZATION = 'Basic hS3sfS44wcl0sa9j';
 const END_POINT = 'https://20.ecmascript.pages.academy/big-trip';
 
-const pageHeaderElement = document.querySelector('.page-header');
 const tripEventsElement = document.querySelector('.trip-events');
-const siteHeaderElement = pageHeaderElement.querySelector('.trip-main');
+const siteHeaderElement = document.querySelector('.trip-main');
 
 async function main() {
 
@@ -66,7 +65,6 @@ async function main() {
     filterModel,
     tripsModel,
   });
-
 
   render(new TripInfoView(), siteHeaderElement);
   filterPresenter.init();

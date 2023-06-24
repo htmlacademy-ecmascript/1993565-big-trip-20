@@ -326,16 +326,6 @@ export default class EditPointView extends AbstractStatefulView {
       }
     });
 
-    const eventTypes = this.element.querySelectorAll('input[name=event-type]');
-    for (const eventType of eventTypes) {
-      eventType.addEventListener('change', () => {
-        this.updateElement({
-          offers: [],
-          type: eventType.value,
-        });
-      });
-    }
-
     this.#setStartDatepicker();
     this.#setEndDatepicker();
   }
