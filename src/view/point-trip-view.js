@@ -6,13 +6,17 @@ import {
 
 } from '../utils.js';
 /* eslint-disable no-shadow */
-const createOffersTemplate = (offers) => {
+const createOffersTemplate = (offers, tripPoint) => {
   let result = '';
   if (!offers) {
     return result;
   }
 
   for (const offer of offers) {
+
+      if (!tripPoint.offers.includes(offer.id)) {
+      continue;
+    }
     result += (
       `<li class="event__offer">
         <span class="event__offer-title">${offer.title}</span>
@@ -35,9 +39,8 @@ const createPointTripTemplate = (tripPoint, destinationArr, typeToOffersMap) => 
   const humanDura = humanizeHour(durationTime);
   const destinationName = destinationArr.get(tripPoint.destination).name;
   const offers = typeToOffersMap.get(tripPoint.type);
-  const favoriteClassName = tripPoint.isFavorite
-    ? 'event__favorite-btn--active'
-    : '';
+  const favoriteClassName = tripPoint.isFavorite ? 'event__favorite-btn--active' : '';
+
 
   return `<li class="trip-events__item">
               <div class="event">
@@ -70,7 +73,7 @@ const createPointTripTemplate = (tripPoint, destinationArr, typeToOffersMap) => 
                 <h4 class="visually-hidden">Offers:</h4>
                 <ul class="event__selected-offers">
                   <li class="event__offer">
-                    ${createOffersTemplate(offers)}
+                    ${createOffersTemplate(offers, tripPoint)}
                   </li>
                 </ul>
                 <button class="event__favorite-btn  ${favoriteClassName}" type="button">

@@ -55,9 +55,7 @@ const createType = (currentType) =>
   OFFERS_TYPE.map(
     (pointType) =>
       `<div class="event__type-item">
-   <input id="event-type-${pointType}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}" ${
-  currentType === 'checked'
-}>
+   <input id="event-type-${pointType}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}">
    <label class="event__type-label  event__type-label--${pointType}" for="event-type-${pointType}">${pointType}</label>
    </div>`
   ).join('');
@@ -98,6 +96,7 @@ const createEditPointTemplate = (
   destinationArr,
   typeToOffersMap
 ) => {
+
   const offersMapToArr = typeToOffersMap.get(tripPoint.type);
   const destination = destinationArr.get(tripPoint.destination);
   const dateTo = humanizeDateTime(tripPoint.dateTo);
@@ -370,6 +369,16 @@ export default class EditPointView extends AbstractStatefulView {
         }
       }
     });
+
+    const eventTypes = this.element.querySelectorAll('input[name=event-type]');
+    for (const eventType of eventTypes) {
+      eventType.addEventListener('change', () => {
+        this.updateElement({
+          offers: [],
+          type: eventType.value
+        });
+      });
+    }
 
     this.#setStartDatepicker();
     this.#setEndDatepicker();

@@ -10,8 +10,6 @@ const Mode = {
 };
 
 export default class TripPresenter {
-  #tripEventsContainer = null;
-  #handleFavoriteChange;
   #tripPoint = null;
   #tripPointComponent = null;
   #tripPointsContainer = null;
@@ -45,7 +43,15 @@ export default class TripPresenter {
         document.addEventListener('keydown', this.#escKeyDownHandler);
       },
 
-      onFavoriteClick: this.#handleFavoriteClick,
+      onFavoriteClick: () => {
+      console.log(this.#tripPoint);
+      this.#handleDataChange( UserAction.UPDATE_TRIP,
+      UpdateType.MINOR,
+      {
+        ...this.#tripPoint,
+        isFavorite: !this.#tripPoint.isFavorite,
+      })
+    },
     });
 
     this.#tripPointEditComponent = new EditPointView({
@@ -85,14 +91,7 @@ export default class TripPresenter {
   }
 
   #handleFavoriteClick() {
-    return () => {
-      UserAction.UPDATE_TRIP,
-      UpdateType.MINOR,
-      this.#handleDataChange({
-        ...this.#tripPoint,
-        isFavorite: !this.#tripPoint.isFavorite,
-      });
-    };
+    return ;
   }
 
   destroy() {
