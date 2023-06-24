@@ -14,7 +14,7 @@ const createOffersTemplate = (offers, tripPoint) => {
 
   for (const offer of offers) {
 
-      if (!tripPoint.offers.includes(offer.id)) {
+    if (!tripPoint.offers.includes(offer.id)) {
       continue;
     }
     result += (
@@ -46,29 +46,19 @@ const createPointTripTemplate = (tripPoint, destinationArr, typeToOffersMap) => 
               <div class="event">
                 <time class="event__date" datetime="${tripPoint.dateFrom}">${date} </time>
                 <div class="event__type">
-                  <img class="event__type-icon" width="42" height="42" src="img/icons/${
-  tripPoint.type
-}.png" alt="Event type icon">
+                  <img class="event__type-icon" width="42" height="42" src="img/icons/${tripPoint.type}.png" alt="Event type icon">
                 </div>
-                <h3 class="event__title">${tripPoint.type} ${
-  destinationName
-}</h3>
+                <h3 class="event__title">${tripPoint.type} ${destinationName}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
-                    <time class="event__start-time" datetime="${
-  tripPoint.dateFrom
-}">${startTime}</time>
+                    <time class="event__start-time" datetime="${tripPoint.dateFrom}">${startTime}</time>
                     —
-                    <time class="event__end-time" datetime="${
-  tripPoint.dateTo
-}">${endTime}</time>
+                    <time class="event__end-time" datetime="${tripPoint.dateTo}">${endTime}</time>
                   </p>
                   <p class="event__duration"> ${humanDura}</p>
                 </div>
                 <p class="event__price">
-                  €&nbsp;<span class="event__price-value"> ${
-  tripPoint.basePrice
-}</span>
+                  €&nbsp;<span class="event__price-value"> ${tripPoint.basePrice}</span>
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
                 <ul class="event__selected-offers">
