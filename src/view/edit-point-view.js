@@ -148,7 +148,7 @@ const createEditPointTemplate = (
       <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${tripPoint.basePrice}" ${isDisabled ? 'disabled' : ''}>
     </div>
 
-       <button class="event__save-btn  btn  btn--blue" type="submit"  ${!tripPoint.dateFrom ? 'disabled' : ''} ${!tripPoint.dateTo ? 'disabled' : ''} ${isDisabled ? 'disabled' : ''}> ${isSaving ? 'Saving...' : 'Save'} </button>
+       <button class="event__save-btn  btn  btn--blue" type="submit"   ${isDisabled ? 'disabled' : ''}> ${isSaving ? 'Saving...' : 'Save'} </button>
           <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${delet}</button>
           <button class="event__rollup-btn" type="button"  ${isDisabled ? 'disabled' : ''}>
             <span class="visually-hidden">Open event</span>
@@ -215,13 +215,13 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #startTimeChangeHandler = ([startDate]) => {
-    this.updateElement({
+    this._setState({
       dateFrom: startDate,
     });
   };
 
   #dateEndChangeHandler = ([endDate]) => {
-    this.updateElement({
+    this._setState({
       dateTo: endDate,
     });
   };
@@ -276,10 +276,10 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #offersHandler = (evt) => {
-    this._setState({
+    this.updateElement({
       offers: evt.target.checked
         ? [...this._state.offers, evt.target.id]
-        : this._state.offers.filter((offer) => offer.id === evt.target.id),
+        : this._state.offers.filter((id) => id !== evt.target.id),
     });
   };
 
