@@ -7,8 +7,6 @@ const humanizeHour = (hour) => hour ? dayjs(hour).format('HH:MM') : '';
 
 const humanizeDateTime = (dateTime) => dateTime ? dayjs(dateTime).format('DD/MM/YY HH:mm') : '';
 
-const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
-
 const durationCalculation = (dateFrom, dateTo) => dayjs(dateTo).diff(dayjs(dateFrom));
 
 const checkIsInThePast = (date) => date && dayjs().isAfter(date, 'D');
@@ -29,14 +27,10 @@ const FILTER = {
     tripPoints.filter((tripPoint) => checkIsInFuture(tripPoint.dateFrom)),
 };
 
-const humanizeDate = (date) => dayjs(date).format('DD MMM');
-
 export {
   humanizeHour,
-  humanizeDate,
   humanizeDateTime,
   humanizeDueDate,
   durationCalculation,
-  isDatesEqual,
   FILTER,
 };

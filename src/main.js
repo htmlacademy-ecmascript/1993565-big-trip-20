@@ -9,13 +9,13 @@ import OffersModel from './model/offers-model.js';
 import TripsApiService from './api/trips-api-service.js';
 import DestinationsApiService from './api/destinations-api-service.js';
 import OffersApiService from './api/offers-api-service.js';
+import TripInfoView from './view/trip-inf-view.js';
 
 const AUTHORIZATION = 'Basic hS3sfS44wcl0sa9j';
 const END_POINT = 'https://20.ecmascript.pages.academy/big-trip';
+
 const tripEventsElement = document.querySelector('.trip-events');
 const siteHeaderElement = document.querySelector('.trip-main');
-const siteFilterElement = document.querySelector('.trip-controls');
-
 
 async function main() {
 
@@ -61,13 +61,13 @@ async function main() {
   }
 
   const filterPresenter = new FilterPresenter({
-    filterContainer: siteFilterElement,
+    filterContainer: siteHeaderElement,
     filterModel,
     tripsModel,
   });
 
+  render(new TripInfoView(), siteHeaderElement);
   filterPresenter.init();
-
   render(newTripButtonComponent, siteHeaderElement);
 }
 

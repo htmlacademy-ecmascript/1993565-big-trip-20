@@ -10,16 +10,16 @@ export default class NewEventButtonView extends AbstractView {
     this.element.addEventListener('click', this.#clickHandler);
   }
 
+  get template() {
+    return createNewEventButtonTemplate();
+  }
+
   enabled() {
     this.element.disabled = false;
   }
 
   disabled() {
     this.element.disabled = true;
-  }
-
-  get template() {
-    return createNewEventButtonTemplate();
   }
 
   #clickHandler = (evt) => {
